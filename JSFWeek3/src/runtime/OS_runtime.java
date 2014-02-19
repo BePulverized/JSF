@@ -142,7 +142,7 @@ public class OS_runtime {
         double converted = number;
         while (converted > 1000) {
             converted /= 1000;
-            suffix = formatting.Metric.nextShortMetricPrefix(suffix);
+            suffix = Formatting.nextShortMetricPrefix(suffix);
         }
         double tmpRounding = converted * 100;
         tmpRounding = Math.round(tmpRounding);
