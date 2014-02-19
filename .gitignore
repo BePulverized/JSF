@@ -4,3 +4,8 @@
 *.jar
 *.war
 *.ear
+/Week 3/nbproject/private/
+/JSFWeek2Opd1/nbproject/private/
+/JSFWeek3/build/
+/JSFWeek2Opd2/nbproject/private/
+/JSFWeek2Opd3/nbproject/private/
