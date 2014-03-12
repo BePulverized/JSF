@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jsfweek3opdr9;
 
 import java.io.IOException;
