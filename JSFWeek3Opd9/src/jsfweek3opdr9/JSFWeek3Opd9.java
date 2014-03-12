@@ -12,7 +12,7 @@ import timeutil.TimeStamp;
  *
  * @author user
  */
-public class JSFWeek3Opd8 {
+public class JSFWeek3Opd9 {
 
     public static ArrayList<MyRunnable> commandos = new ArrayList<>();
 
