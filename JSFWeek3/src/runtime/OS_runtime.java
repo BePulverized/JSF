@@ -5,7 +5,10 @@
  */
 package runtime;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import static java.lang.Runtime.getRuntime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class OS_runtime {
             Thread.sleep(500);
             process = Runtime.getRuntime().exec("gnome-calculator");
             Thread.sleep(2000);
-            process.destroy();
+            Runtime.getRuntime().exit(0);
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(OS_runtime.class.getName()).log(Level.SEVERE, null, ex);
         }
