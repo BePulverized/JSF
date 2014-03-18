@@ -1,47 +1,66 @@
 //<editor-fold defaultstate="collapsed" desc="Jibberish">
 package gui;
 
+import calculate.KochFractal;
+import calculate.KochObserver;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 //</editor-fold>
 
 /**
+ * In this class you can find the main GUI.
  *
+ * @organization: Moridrin
  * @author J.B.A.J. Berkvens
+ * @date 2014/03/17
  */
 public class Fractal_01 extends Application {
-    
+
     //<editor-fold defaultstate="collapsed" desc="Declarations">
-    
     //</editor-fold>
-    
     //<editor-fold desc="Operations">
     //<editor-fold defaultstate="collapsed" desc="Start(primaryStage)">
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
+        //<editor-fold defaultstate="collapsed" desc="Generated Code">
+        Button buttonPrintFractal = new Button();
+        buttonPrintFractal.setText("Print first lvl Fractal");
+        final Label labelOutput = new Label("See console outpur for coördinates");
+        labelOutput.setVisible(false);
+        buttonPrintFractal.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                KochFractal kochFractal = new KochFractal();
+                KochObserver kochObserver = new KochObserver();
+                kochFractal.addObserver(kochObserver);
+                kochFractal.setLevel(1);
+                kochFractal.generateBottomEdge();
+                kochFractal.generateLeftEdge();
+                kochFractal.generateRightEdge();
+                labelOutput.setVisible(true);
             }
         });
-        
+
         StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(15, 12, 15, 12));
+        vBox.setSpacing(10);
+        vBox.getChildren().add(buttonPrintFractal);
+        vBox.getChildren().add(labelOutput);
+        root.getChildren().add(vBox);
         Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Print Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
+        //</editor-fold>    
     }
     //</editor-fold>
 
