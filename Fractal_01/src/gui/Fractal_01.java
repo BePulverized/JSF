@@ -30,7 +30,6 @@ public class Fractal_01 extends Application {
     //<editor-fold defaultstate="collapsed" desc="Start(primaryStage)">
     @Override
     public void start(Stage primaryStage) {
-        //<editor-fold defaultstate="collapsed" desc="Generated Code">
         Button buttonPrintFractal = new Button();
         buttonPrintFractal.setText("Print first lvl Fractal");
         final Label labelOutput = new Label("See console outpur for coördinates");
@@ -60,7 +59,6 @@ public class Fractal_01 extends Application {
         primaryStage.setTitle("Print Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
-        //</editor-fold>    
     }
     //</editor-fold>
 
