@@ -7,7 +7,7 @@ import calculate.KochObserver;
  *
  * @author J.B.A.J. Berkvens
  */
-public class Console {
+public class Main {
     
     //<editor-fold defaultstate="collapsed" desc="Declarations">
 
