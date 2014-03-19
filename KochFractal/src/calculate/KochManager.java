@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import jsf31kochfractal.fx.JSF31KochFractalFX;
+import timeutil.TimeStamp;
 //</editor-fold>
 
 /**
  * In this class you can find all properties and operations for KochObserver.
  *
  * @organization: Moridrin
- * @author J.B.A.J. Berkvens
- * @date 2014/03/17
+ * @author Anne Toonen
+ * @date 2014/03/19
  */
 public class KochManager implements Observer {
 
@@ -39,7 +40,19 @@ public class KochManager implements Observer {
 
     public void changeLevel(int nxt) {
         koch.setLevel(nxt);
+        edges.clear();
+
+        //OPD 5
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+
         drawEdges();
+
+        ts.setEnd();
+        application.setTextCalc(ts.toString());
+
+        //OPD 6
+        application.setTextNrEdges(String.valueOf(koch.getNrOfEdges()));
     }
 
     public void drawEdges() {
