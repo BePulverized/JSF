@@ -2,10 +2,12 @@
 package gui;
 
 import calculate.Edge;
-import calculate.KochManager;
+import calculate.KochFractal;
+import calculate.TimeStamp;
 import interfaces.SuperClass;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -20,6 +22,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import runnable.BottomEdge;
+import runnable.LeftEdge;
+import runnable.RightEdge;
 //</editor-fold>
 
 /**
@@ -41,8 +46,13 @@ public class Main extends Application implements SuperClass {
     private double lastDragX = 0.0;
     private double lastDragY = 0.0;
     //</editor-fold>
-    private KochManager kochManager;
     private int currentLevel = 1;
+    private List<Edge> edges;
+    private int counter = 0;
+    private BottomEdge bottomEdge;
+    private LeftEdge leftEdge;
+    private RightEdge rightEdge;
+    private TimeStamp timestamp;
     //<editor-fold desc="Interface Components">
     private Label labelLevel;
     private Label labelNrEdges;
@@ -174,9 +184,8 @@ public class Main extends Application implements SuperClass {
         //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="KochManager">
+        edges = new ArrayList<>();
         resetZoom();
-        kochManager = new KochManager(this);
-        kochManager.setLevel(currentLevel);
         //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="Scene">
@@ -189,52 +198,55 @@ public class Main extends Application implements SuperClass {
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
+        requestDrawEdges();
         //</editor-fold>
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="clearKochPanel()">
     public void clearKochPanel() {
-        GraphicsContext gc = kochPanel.getGraphicsContext2D();
-        gc.clearRect(0.0, 0.0, kpWidth, kpHeight);
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0.0, 0.0, kpWidth, kpHeight);
+        edges.clear();
+        counter = 0;
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="requestDrawEdges()">
     public void requestDrawEdges() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                kochManager.drawEdges();
-            }
-        });
+        clearKochPanel();
+        edges.clear();
+        counter = 0;
+        bottomEdge = new BottomEdge(new KochFractal(), this, currentLevel);
+        Thread bottomThread = new Thread(bottomEdge);
+        bottomThread.start();
+        leftEdge = new LeftEdge(new KochFractal(), this, currentLevel);
+        Thread leftThread = new Thread(leftEdge);
+        leftThread.start();
+        rightEdge = new RightEdge(new KochFractal(), this, currentLevel);
+        Thread rightThread = new Thread(rightEdge);
+        rightThread.start();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="drawEdge()">
-    public synchronized void drawEdge(Edge e) {
-        // Graphics
+    public void drawEdges() {
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
+        gc.clearRect(0.0, 0.0, kpWidth, kpHeight);
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0.0, 0.0, kpWidth, kpHeight);
+        for (Edge edge : edges) {
+            Edge e = edgeAfterZoomAndDrag(edge);
+            gc.setStroke(e.color);
 
-        // Adjust edge for zoom and drag
-        Edge e1 = edgeAfterZoomAndDrag(e);
+            if (currentLevel <= 3) {
+                gc.setLineWidth(2.0);
+            } else if (currentLevel <= 5) {
+                gc.setLineWidth(1.5);
+            } else {
+                gc.setLineWidth(1.0);
+            }
 
-        // Set line color
-        gc.setStroke(e1.color);
-
-        // Set line width depending on level
-        if (currentLevel <= 3) {
-            gc.setLineWidth(2.0);
-        } else if (currentLevel <= 5) {
-            gc.setLineWidth(1.5);
-        } else {
-            gc.setLineWidth(1.0);
+            gc.strokeLine(e.X1, e.Y1, e.X2, e.Y2);
         }
-
-        // Draw line
-        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
     //</editor-fold>
 
@@ -261,11 +273,11 @@ public class Main extends Application implements SuperClass {
     //<editor-fold defaultstate="collapsed" desc="*ButtonActionPreformed">
     //<editor-fold defaultstate="collapsed" desc="increaseLevelButtonActionPerformed(event)">
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
-        if (currentLevel < 12) {
+        if (currentLevel < 4) {
             // resetZoom();
             currentLevel++;
             labelLevel.setText("Level: " + currentLevel);
-            kochManager.setLevel(currentLevel);
+            requestDrawEdges();
         }
     }
     //</editor-fold>
@@ -276,7 +288,7 @@ public class Main extends Application implements SuperClass {
             // resetZoom();
             currentLevel--;
             labelLevel.setText("Level: " + currentLevel);
-            kochManager.setLevel(currentLevel);
+            requestDrawEdges();
         }
     }
     //</editor-fold>
@@ -284,9 +296,23 @@ public class Main extends Application implements SuperClass {
     //<editor-fold defaultstate="collapsed" desc="fitFractalButtonActionPerformed(event)">
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();
-        kochManager.drawEdges();
     }
     //</editor-fold>
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="plus()">
+    public synchronized void plus() {
+        if (counter == 0) {
+            timestamp = new TimeStamp();
+            timestamp.setBegin("Begin genereren");
+        }
+        counter++;
+        if (counter >= 3) {
+            drawEdges();
+            timestamp.setEnd("Eind genereren");
+            System.out.println(timestamp.toString());
+        }
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="kochPanelMouse*">
@@ -303,7 +329,7 @@ public class Main extends Application implements SuperClass {
             }
             zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
             zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
-            kochManager.drawEdges();
+            drawEdges();
         }
     }
     //</editor-fold>
@@ -314,7 +340,7 @@ public class Main extends Application implements SuperClass {
         zoomTranslateY = zoomTranslateY + event.getY() - lastDragY;
         lastDragX = event.getX();
         lastDragY = event.getY();
-        kochManager.drawEdges();
+        drawEdges();
     }
     //</editor-fold>
 
@@ -324,6 +350,7 @@ public class Main extends Application implements SuperClass {
         startPressedY = event.getY();
         lastDragX = event.getX();
         lastDragY = event.getY();
+        drawEdges();
     }
     //</editor-fold>
     //</editor-fold>
@@ -334,6 +361,7 @@ public class Main extends Application implements SuperClass {
         zoom = kpSize;
         zoomTranslateX = (kpWidth - kpSize) / 2.0;
         zoomTranslateY = (kpHeight - kpSize) / 2.0;
+        drawEdges();
     }
     //</editor-fold>
 
@@ -360,26 +388,25 @@ public class Main extends Application implements SuperClass {
         launch(args);
     }
     //</editor-fold>
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="preformAction(action, args)">
     @Override
-    public void preformAction(String action, Object[] args) {
+    public synchronized void preformAction(String action, Object[] args) {
         switch (action) {
             case "clearKochPanel":
                 clearKochPanel();
                 break;
             case "drawEdge":
-                drawEdge((Edge) args[0]);
+                drawEdges();
                 break;
-            case "desableButton":
-                buttonDecreaseLevel.setDisable(true);
-                buttonIncreaseLevel.setDisable(true);
+            case "updateEdges":
+                edges.add((Edge) args[0]);
                 break;
-            case "activateButton":
-                buttonDecreaseLevel.setDisable(false);
-                buttonIncreaseLevel.setDisable(false);
+            case "plus":
+                plus();
+                break;
         }
     }
+    //</editor-fold>
     //</editor-fold>
 }
