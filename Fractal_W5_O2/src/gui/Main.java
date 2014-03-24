@@ -8,6 +8,7 @@ import interfaces.SuperClass;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -227,6 +228,17 @@ public class Main extends Application implements SuperClass {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="requestDraw()">
+    private void requestDraw() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                drawEdges();
+            }
+        });
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="drawEdge()">
     public void drawEdges() {
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
@@ -273,7 +285,7 @@ public class Main extends Application implements SuperClass {
     //<editor-fold defaultstate="collapsed" desc="*ButtonActionPreformed">
     //<editor-fold defaultstate="collapsed" desc="increaseLevelButtonActionPerformed(event)">
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
-        if (currentLevel < 4) {
+        if (currentLevel < 12) {
             // resetZoom();
             currentLevel++;
             labelLevel.setText("Level: " + currentLevel);
@@ -308,7 +320,7 @@ public class Main extends Application implements SuperClass {
         }
         counter++;
         if (counter >= 3) {
-            drawEdges();
+            requestDraw();
             timestamp.setEnd("Eind genereren");
             System.out.println(timestamp.toString());
         }
