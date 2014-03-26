@@ -1,6 +1,8 @@
 package runnable;
 
+import calculate.Edge;
 import calculate.KochFractal;
+import calculate.KochManager;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -15,6 +17,7 @@ public class RightEdge implements Runnable, Observer {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final KochFractal kochFractal;
+    private final KochManager kochManager;
     
     //</editor-fold>
     
@@ -23,10 +26,12 @@ public class RightEdge implements Runnable, Observer {
     /**
      * This is the constructor for RightEdge.
      *
+     * @param kochManager
      * @param kochFractal
      * @param lvl
      */
-    public RightEdge(KochFractal kochFractal, int lvl) {
+    public RightEdge(KochManager kochManager, KochFractal kochFractal, int lvl) {
+        this.kochManager = kochManager;
         this.kochFractal = kochFractal;
         this.kochFractal.setLevel(lvl);
         this.kochFractal.addObserver(this);
@@ -40,13 +45,14 @@ public class RightEdge implements Runnable, Observer {
     @Override
     public void run() {
         kochFractal.generateRightEdge();
+        kochManager.plus();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="update(o, arg)">
     @Override
     public void update(Observable o, Object arg) {
-        
+        kochManager.updateEdges((Edge) arg);
     }
     //</editor-fold>
     //</editor-fold>
