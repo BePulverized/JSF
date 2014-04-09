@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 public class MovingBallsFX extends Application {
     
     private Thread threadDraw;
+    private Monitor monitor = new Monitor();
     private Ball[] ballArray = new Ball[10];
     private Thread[] threadArray = new Thread[10];
     private CheckBox[] checkBoxArray = new CheckBox[10];
@@ -97,6 +99,13 @@ public class MovingBallsFX extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                System.exit(0);
+            }
+        });
+        
         // Start thread to draw each 20 ms
         threadDraw = new Thread(new DrawRunnable());
         threadDraw.start();
@@ -109,7 +118,7 @@ public class MovingBallsFX extends Application {
             // Reader selected: new red ball
             Ball b = new Ball(minX, maxX, minCsX, maxCsX, y, Color.RED);
             ballArray[index] = b;
-            Thread t = new Thread(new BallRunnable(b));
+            Thread t = new Thread(new BallRunnable(b,monitor));
             threadArray[index] = t;
             circleArray[index].setVisible(true);
             t.start();
@@ -117,7 +126,7 @@ public class MovingBallsFX extends Application {
             // Writer selected: new blue ball
             Ball b = new Ball(minX, maxX, minCsX, maxCsX, y, Color.BLUE);
             ballArray[index] = b;
-            Thread t = new Thread(new BallRunnable(b));
+            Thread t = new Thread(new BallRunnable(b,monitor));
             threadArray[index] = t;
             circleArray[index].setVisible(true);
             t.start();
