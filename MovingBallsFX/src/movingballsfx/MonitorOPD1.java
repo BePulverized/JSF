@@ -76,7 +76,7 @@ public class MonitorOPD1 implements IMonitor{
         try {
             writersActive--;
             if (readersWaiting > 0) {
-                okToRead.signal();
+                okToRead.signalAll();
             } else {
                 okToWrite.signal();
             }
