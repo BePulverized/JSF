@@ -19,6 +19,7 @@ public class MonitorOPD2 implements IMonitor{
     private Condition okToRead;
     private Condition okToWrite;
     private int readersWaiting;
+    private int writersWaiting;
 
     public MonitorOPD2() {
         this.monLock = new ReentrantLock();
@@ -62,10 +63,13 @@ public class MonitorOPD2 implements IMonitor{
         monLock.lock();
         try {
             while (writersActive > 0 || readersActive > 0) {
+                writersWaiting++;
                 okToWrite.await();
+                writersWaiting--;
             }
             writersActive++;
-        } finally {
+        } 
+        finally {
             monLock.unlock();
         }
     }
@@ -75,10 +79,11 @@ public class MonitorOPD2 implements IMonitor{
         monLock.lock();
         try {
             writersActive--;
-            if (readersWaiting > 0) {
-                okToRead.signal();
-            } else {
+            if(writersWaiting > 0){
                 okToWrite.signal();
+            }
+            else{
+                okToRead.signalAll();
             }
         } finally {
             monLock.unlock();
