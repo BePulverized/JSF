@@ -25,19 +25,14 @@ public class BallRunnable implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
 
-                if (ball.getColor() == Color.RED && ball.isEnteringCs()) {
-                    monitor.enterReader();
-                }
-                if (ball.getColor() == Color.RED && ball.isLeavingCs()) {
-                    monitor.exitReader();
-                }
-
                 if (ball.getColor() == Color.BLUE && ball.isEnteringCs()) {
                     monitor.enterWriter();
-                }
-                if (ball.getColor() == Color.BLUE && ball.isLeavingCs()) {
-
+                } else if (ball.getColor() == Color.BLUE && ball.isLeavingCs()) {
                     monitor.exitWriter();
+                } else if (ball.getColor() == Color.RED && ball.isEnteringCs()) {
+                    monitor.enterReader();
+                } else if (ball.getColor() == Color.RED && ball.isLeavingCs()) {
+                    monitor.exitReader();
                 }
 
                 ball.move();
@@ -45,6 +40,13 @@ public class BallRunnable implements Runnable {
                 Thread.sleep(ball.getSpeed());
 
             } catch (InterruptedException ex) {
+                if (ball.isInside()) {
+                    if (ball.getColor() == Color.RED) {
+                        monitor.exitReader();
+                    } else if (ball.getColor() == Color.BLUE) {
+                        monitor.exitWriter();
+                    }
+                }
                 Thread.currentThread().interrupt();
             }
         }

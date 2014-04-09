@@ -33,7 +33,7 @@ public class Ball {
         return xPos;
     }
 
-   public int getYPos() {
+    public int getYPos() {
         return yPos;
     }
 
@@ -48,8 +48,12 @@ public class Ball {
     public boolean isEnteringCs() {
         return xPos == minCsX;
     }
-    
+
     public boolean isLeavingCs() {
         return xPos == maxCsX;
+    }
+
+    public boolean isInside() {
+        return xPos < maxCsX && xPos > minCsX;
     }
 }
