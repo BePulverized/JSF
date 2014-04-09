@@ -13,9 +13,9 @@ import javafx.scene.paint.Color;
 public class BallRunnable implements Runnable {
 
     private Ball ball;
-    private Monitor monitor;
+    private IMonitor monitor;
 
-    public BallRunnable(Ball ball, Monitor monitor) {
+    public BallRunnable(Ball ball, IMonitor monitor) {
         this.ball = ball;
         this.monitor = monitor;
     }
@@ -24,19 +24,23 @@ public class BallRunnable implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-//                ball.move();
-                
-                if (ball.getColor() == Color.RED) {
+
+                if (ball.getColor() == Color.RED && ball.isEnteringCs()) {
                     monitor.enterReader();
-                    ball.move();
+                }
+                if (ball.getColor() == Color.RED && ball.isLeavingCs()) {
                     monitor.exitReader();
                 }
 
-                if (ball.getColor() == Color.BLUE) {
+                if (ball.getColor() == Color.BLUE && ball.isEnteringCs()) {
                     monitor.enterWriter();
-                    ball.move();
+                }
+                if (ball.getColor() == Color.BLUE && ball.isLeavingCs()) {
+
                     monitor.exitWriter();
                 }
+
+                ball.move();
 
                 Thread.sleep(ball.getSpeed());
 

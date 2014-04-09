@@ -11,7 +11,7 @@ import java.util.concurrent.locks.*;
  *
  * @author anne
  */
-public class Monitor {
+public class MonitorOPD1 implements IMonitor{
 
     private Lock monLock;
     private int writersActive;
@@ -20,7 +20,7 @@ public class Monitor {
     private Condition okToWrite;
     private int readersWaiting;
 
-    public Monitor() {
+    public MonitorOPD1() {
         this.monLock = new ReentrantLock();
         this.writersActive = 0;
         this.readersActive = 0;
@@ -29,6 +29,7 @@ public class Monitor {
         this.okToWrite = monLock.newCondition();
     }
 
+    @Override
     public void enterReader() throws InterruptedException {
         monLock.lock();
         try {
@@ -43,6 +44,7 @@ public class Monitor {
         }
     }
 
+    @Override
     public void exitReader() {
         monLock.lock();
         try {
@@ -55,6 +57,7 @@ public class Monitor {
         }
     }
 
+    @Override
     public void enterWriter() throws InterruptedException {
         monLock.lock();
         try {
@@ -67,6 +70,7 @@ public class Monitor {
         }
     }
 
+    @Override
     public void exitWriter() {
         monLock.lock();
         try {

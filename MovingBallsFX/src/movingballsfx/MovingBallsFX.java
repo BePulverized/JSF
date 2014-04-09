@@ -24,7 +24,7 @@ import javafx.stage.WindowEvent;
 public class MovingBallsFX extends Application {
     
     private Thread threadDraw;
-    private Monitor monitor = new Monitor();
+    private IMonitor monitor = new MonitorOPD1();
     private Ball[] ballArray = new Ball[10];
     private Thread[] threadArray = new Thread[10];
     private CheckBox[] checkBoxArray = new CheckBox[10];
