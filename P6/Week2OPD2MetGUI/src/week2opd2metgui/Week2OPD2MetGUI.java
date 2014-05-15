@@ -1,4 +1,4 @@
-package week2opd2zondergui;
+package week2opd2metgui;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -9,13 +9,13 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
- * In this class you can find all properties and operations for Week2OPD2ZonderGUI.
+ * In this class you can find all properties and operations for Week2OPD2MetGUI.
  *
  * @organization: Moridrin
  * @author phinux
  * @date 15-mei-2014
  */
-public class Week2OPD2ZonderGUI extends Application {
+public class Week2OPD2MetGUI extends Application {
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     
     //</editor-fold>
