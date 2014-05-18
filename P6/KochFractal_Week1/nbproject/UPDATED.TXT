@@ -1,5 +1,5 @@
 ==============================================
-Project KochFractal_Week6 build script updated
+Project KochFractal_Week5 build script updated
 ==============================================
 
 Project build script file jfx-impl.xml in nbproject sub-directory has not been recognized
