@@ -31,4 +31,25 @@ public class Edge implements Serializable{
         Color returner = Color.hsb(hue, sat, bri);
         return returner;
     }
+    
+    @Override
+    public String toString(){
+        StringBuilder returner = new StringBuilder();
+        returner.append(X1);
+        returner.append(", ");
+        returner.append(Y1);
+        returner.append(", ");
+        returner.append(X2);
+        returner.append(", ");
+        returner.append(Y2);
+        returner.append(", ");
+        returner.append(hue);
+        returner.append(", ");
+        returner.append(sat);
+        returner.append(", ");
+        returner.append(bri);
+        returner.append(";");        
+        
+        return returner.toString();
+    }
 }

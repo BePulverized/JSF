@@ -3,9 +3,8 @@ package week2opd2zondergui;
 import callculate.Edge;
 import callculate.KochFractal;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +26,7 @@ public class W2OPD2OutText implements Observer{
     private final Scanner input;
     private final KochFractal koch;
     private File file;
-    private FileOutputStream fos;
-    private ObjectOutputStream out;
+    private FileWriter fw;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
@@ -66,6 +64,7 @@ public class W2OPD2OutText implements Observer{
         koch.generateRightEdge();
         
     }
+    
     File controle(String bestandslocatie) throws IOException {
         File f = new File(bestandslocatie);
         if(!f.exists() && f.isDirectory()) {
@@ -109,8 +108,7 @@ public class W2OPD2OutText implements Observer{
     
     private void openFileStream(){
         try {
-            fos = new FileOutputStream(file);
-            out = new ObjectOutputStream(fos);
+            fw  = new FileWriter(file);
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -122,7 +120,7 @@ public class W2OPD2OutText implements Observer{
             Edge e = (Edge) arg;
                      
         try {
-            out.writeObject(e);
+            fw.write(e.toString());
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
         }

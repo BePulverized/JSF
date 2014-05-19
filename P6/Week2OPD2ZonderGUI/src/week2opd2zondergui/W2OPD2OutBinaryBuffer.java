@@ -2,6 +2,7 @@ package week2opd2zondergui;
 
 import callculate.Edge;
 import callculate.KochFractal;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class W2OPD2OutBinaryBuffer implements Observer{
     private void openFileStream(){
         try {
             fos = new FileOutputStream(file);
-            out = new ObjectOutputStream(fos);
+            out = new ObjectOutputStream(new BufferedOutputStream(fos));
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
