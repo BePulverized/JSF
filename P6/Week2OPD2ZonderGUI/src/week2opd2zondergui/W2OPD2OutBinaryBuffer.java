@@ -83,9 +83,9 @@ public class W2OPD2OutBinaryBuffer implements Observer{
         System.out.println();
         int maxNr = 10;
         int nr;
-        nr = readInt("maak een keuze uit 0 t/m " + maxNr);
-        while (nr < 0 || nr > maxNr) {
-            nr = readInt("maak een keuze uit 0 t/m " + maxNr);
+        nr = readInt("maak een keuze uit 1 t/m " + maxNr);
+        while (nr < 1 || nr > maxNr) {
+            nr = readInt("maak een keuze uit 1 t/m " + maxNr);
         }
         input.nextLine();
         return nr;
