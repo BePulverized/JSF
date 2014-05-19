@@ -1,4 +1,4 @@
-package jsf31kochfractal.fx;
+package fx;
 
 import calculate.*;
 import javafx.application.Application;

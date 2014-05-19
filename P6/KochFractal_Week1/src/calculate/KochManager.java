@@ -1,15 +1,17 @@
+//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package calculate;
 
+import callable.BottomEdgeTask;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.*;
-import jsf31kochfractal.fx.JSF31KochFractalFX;
-import callable.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import javafx.application.Platform;
+import fx.JSF31KochFractalFX;
+import runnable.BottomEdge;
+import runnable.LeftEdge;
+import runnable.RightEdge;
 import timeutil.TimeStamp;
+//</editor-fold>
 
 /**
  * In this class you can find all properties and operations for KochObserver.
@@ -24,16 +26,12 @@ public class KochManager implements Observer {
     private final JSF31KochFractalFX application;
     private final KochFractal koch;
     private final ArrayList<Edge> edges;
+    private int counter;
     public TimeStamp ts1;
     public TimeStamp ts2;
     
-    private ExecutorService pool;
-    Future<ArrayList<Edge>> futButtom;
-    Future<ArrayList<Edge>> futLeft;
-    Future<ArrayList<Edge>> futRight;
-    CyclicBarrier cb;
-
     //</editor-fold>   
+
     //<editor-fold desc="Operations">
     //<editor-fold defaultstate="collapsed" desc="Constructor()">
     /**
@@ -47,10 +45,6 @@ public class KochManager implements Observer {
         
 
         edges = new ArrayList<>();
-
-        int treads = 4;
-        pool = Executors.newFixedThreadPool(treads);
-        this.cb = new CyclicBarrier(treads);
     }
     //</editor-fold>
 
@@ -60,33 +54,28 @@ public class KochManager implements Observer {
         this.ts1 = new TimeStamp();
         ts1.setBegin();
 
-        futButtom = pool.submit(new BottomEdge(this, new KochFractal(), level));
-        futLeft = pool.submit(new LeftEdge(this, new KochFractal(), level));
-        futRight = pool.submit(new RightEdge(this, new KochFractal(), level));
-        pool.execute(new Runnable() {
+        counter = 0;
+        Thread bottomThread = new Thread(new BottomEdgeTask(this, new KochFractal(), level));
+        bottomThread.start();
 
-            @Override
-            public void run() {
-                try {
-                    cb.await();
-                    Thread.sleep(200);
-                } catch (InterruptedException | BrokenBarrierException ex) {
-                    Logger.getLogger(KochManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                ts1.setEnd();
-        application.requestDrawEdges();
-            }
-        });
-        
-        
+        Thread leftThread = new Thread(new LeftEdge(this, new KochFractal(), level));
+        leftThread.start();
+
+        Thread rightThread = new Thread(new RightEdge(this, new KochFractal(), level));
+        rightThread.start();
     }
 
+    public synchronized void plus(){
+        counter++;
+        if(counter >= 3){
+            ts1.setEnd();
+            application.requestDrawEdges();
+        }       
+    }
+    
     public synchronized void drawEdges() {
         application.setTextCalc(ts1.toString());
         application.setTextNrEdges(String.valueOf(koch.getNrOfEdges()));
-
-        updateEdges();
-        
         ts2 = new TimeStamp();
         ts2.setBegin();
         application.clearKochPanel();
@@ -98,14 +87,8 @@ public class KochManager implements Observer {
         application.setTextDraw(ts2.toString());
     }
 
-    public synchronized void updateEdges() {
-        try {
-            edges.addAll(futButtom.get());
-            edges.addAll(futLeft.get());
-            edges.addAll(futRight.get());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(KochManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public synchronized void updateEdges(Edge e) {
+        edges.add(e);
     }
 
     @Override
@@ -115,7 +98,4 @@ public class KochManager implements Observer {
     }
 
     //</editor-fold>
-    public CyclicBarrier getCyclicBarrier() {
-        return cb;
-    }
 }
