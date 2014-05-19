@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author Anne Toonen
  * @date 2014/03/19
  */
-public class Week2OPD2ZonderGUI implements Observer{
+public class W2OPD2OutBinaryBuffer implements Observer{
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final Scanner input;
@@ -32,7 +32,7 @@ public class Week2OPD2ZonderGUI implements Observer{
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
-    public Week2OPD2ZonderGUI() {
+    public W2OPD2OutBinaryBuffer() {
         input = new Scanner(System.in);
         this.koch = new KochFractal(); 
         koch.addObserver(this);     
@@ -44,7 +44,7 @@ public class Week2OPD2ZonderGUI implements Observer{
      */
     public static void main(String[] args) {
         
-        Week2OPD2ZonderGUI console = new Week2OPD2ZonderGUI();
+        W2OPD2OutBinaryBuffer console = new W2OPD2OutBinaryBuffer();
         console.start();        
     }
 
@@ -56,7 +56,7 @@ public class Week2OPD2ZonderGUI implements Observer{
         try {
             file = controle("/home/phinux/Workspaces/Portable/Edges");
         } catch (IOException ex) {
-            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
         int choice = kiesLevel();
         koch.setLevel(choice);
@@ -112,7 +112,7 @@ public class Week2OPD2ZonderGUI implements Observer{
             fos = new FileOutputStream(file);
             out = new ObjectOutputStream(fos);
         } catch (IOException ex) {
-            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
             
     }
@@ -124,7 +124,7 @@ public class Week2OPD2ZonderGUI implements Observer{
         try {
             out.writeObject(e);
         } catch (IOException ex) {
-            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
          
     }
