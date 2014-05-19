@@ -2,7 +2,7 @@ package week2opd2zondergui;
 
 import callculate.Edge;
 import callculate.KochFractal;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -26,8 +26,9 @@ public class Week2OPD2ZonderGUI implements Observer{
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final Scanner input;
     private final KochFractal koch;
-    private final String filename = "/home/phinux/Workspaces/Portable/Edges";
-    
+    private File file;
+    private FileOutputStream fos;
+    private ObjectOutputStream out;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
@@ -52,11 +53,29 @@ public class Week2OPD2ZonderGUI implements Observer{
     //<editor-fold defaultstate="collapsed" desc="Operations">
     
     private void start() {
+        try {
+            file = controle("/home/phinux/Workspaces/Portable/Edges");
+        } catch (IOException ex) {
+            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         int choice = kiesLevel();
         koch.setLevel(choice);
+        openFileStream();
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
+        
+    }
+    File controle(String bestandslocatie) throws IOException {
+        File f = new File(bestandslocatie);
+        if(!f.exists() && f.isDirectory()) {
+          f = new File(bestandslocatie + "/Edges"); 
+          f.createNewFile(); 
+        } 
+        else if(!f.exists() && !f.isDirectory()){
+            f.createNewFile();
+        }
+        return f;         
     }
     
     int kiesLevel() {
@@ -88,23 +107,26 @@ public class Week2OPD2ZonderGUI implements Observer{
         return invoer;
     }
     
-    @Override
-    public void update(Observable o, Object arg) {
+    private void openFileStream(){
         try {
-            Edge e = (Edge) arg;
-            FileOutputStream fos;
-            ObjectOutputStream out;
-            
-            fos = new FileOutputStream(filename);
+            fos = new FileOutputStream(file);
             out = new ObjectOutputStream(fos);
-            
-            out.writeObject(e);
-            out.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+            
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+            Edge e = (Edge) arg;
+                     
+        try {
+            out.writeObject(e);
+        } catch (IOException ex) {
+            Logger.getLogger(Week2OPD2ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
     }
     //</editor-fold>
 
