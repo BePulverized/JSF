@@ -1,8 +1,13 @@
 package week2opd2metgui;
 
-import Shared.Edge;
+import callculate.Edge;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -39,7 +44,8 @@ public class Week2OPD2MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private int currentLevel = 1;
+    private File file = new File("/home/phinux/Workspaces/Portable/Edges");
+    private int level = 1;
     
     // Labels for level, nr edges, calculation time, and drawing time
     private Label labelLevel;
@@ -93,7 +99,7 @@ public class Week2OPD2MetGUI extends Application {
         grid.add(labelDrawText, 3, 2, 22, 1);
         
         // Label to present current level of Koch fractal
-        labelLevel = new Label("Level: " + currentLevel);
+        labelLevel = new Label("Level: " + level);
         grid.add(labelLevel, 0, 6);
         
         // Button to fit Koch fractal in Koch panel
@@ -145,6 +151,8 @@ public class Week2OPD2MetGUI extends Application {
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        
     }
     
     //<editor-fold defaultstate="collapsed" desc="Draw methodes">
@@ -155,25 +163,21 @@ public class Week2OPD2MetGUI extends Application {
         gc.fillRect(0.0,0.0,kpWidth,kpHeight);
     }
     
-    public void drawEdges() {
-        clearKochPanel();
-        FileInputStream fis;
-        ObjectInputStream in;
-        
-        fis = new FileInputStream(file);
-        in = new ObjectInputStream(fis);
-        
-        int Level = (int) in.readObject();
-        int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
-        
-        for(int i=0)
-        drawEdge((Edge) in.readObject());
-        
-        in.close();
-
-        
+    public void drawEdges() throws ClassNotFoundException, FileNotFoundException, IOException {
+            clearKochPanel();
+            FileInputStream fis;
+            ObjectInputStream in;
             
-        
+            fis = new FileInputStream(file);
+            in = new ObjectInputStream(fis);
+            
+            level = (int) in.readObject();
+            int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
+            
+            for(int i=0; i < nrOfEdges; i++){
+                drawEdge((Edge) in.readObject());
+            }
+            in.close();
         
     }
     
@@ -188,10 +192,10 @@ public class Week2OPD2MetGUI extends Application {
         gc.setStroke(e1.getColor());
         
         // Set line width depending on level
-        if (currentLevel <= 3) {
+        if (level <= 3) {
             gc.setLineWidth(2.0);
         }
-        else if (currentLevel <=5 ) {
+        else if (level <=5 ) {
             gc.setLineWidth(1.5);
         }
         else {
@@ -222,7 +226,13 @@ public class Week2OPD2MetGUI extends Application {
 
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();
-        drawEdges();
+        try {
+            drawEdges();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {
@@ -237,7 +247,13 @@ public class Week2OPD2MetGUI extends Application {
             }
             zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
             zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
-            drawEdges();
+            try {
+                drawEdges();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }                          
     private void kochPanelMouseDragged(MouseEvent event) {
@@ -245,7 +261,13 @@ public class Week2OPD2MetGUI extends Application {
         zoomTranslateY = zoomTranslateY + event.getY() - lastDragY;
         lastDragX = event.getX();
         lastDragY = event.getY();
-        drawEdges();
+        try {
+            drawEdges();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void kochPanelMousePressed(MouseEvent event) {
@@ -253,7 +275,8 @@ public class Week2OPD2MetGUI extends Application {
         startPressedY = event.getY();
         lastDragX = event.getX();
         lastDragY = event.getY();
-    }                           //</editor-fold>   
+    }                           
+    //</editor-fold>   
     
     //<editor-fold defaultstate="collapsed" desc="Zoom">
     private void resetZoom() {

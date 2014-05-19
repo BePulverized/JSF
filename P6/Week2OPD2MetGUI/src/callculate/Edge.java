@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package Shared;
+package callculate;
 
 import java.io.Serializable;
 import javafx.scene.paint.Color;
