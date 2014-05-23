@@ -27,7 +27,7 @@ public class Edge implements Serializable{
         this.bri = color.getBrightness();
     }
     
-    private Color getColor(){
+    public Color getColor(){
         Color returner = Color.hsb(hue, sat, bri);
         return returner;
     }
