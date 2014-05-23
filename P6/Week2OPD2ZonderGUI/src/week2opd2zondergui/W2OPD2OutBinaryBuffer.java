@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,11 +51,9 @@ public class W2OPD2OutBinaryBuffer implements Observer{
         W2OPD2OutBinaryBuffer console = new W2OPD2OutBinaryBuffer();
         console.start();        
     }
-
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    
     private void start() {
         try {
             file = controle("/home/phinux/Workspaces/Portable/Edges");
@@ -65,8 +66,13 @@ public class W2OPD2OutBinaryBuffer implements Observer{
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
-        
+        try {
+            out.close();
+        } catch (IOException ex) {
+            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    
     File controle(String bestandslocatie) throws IOException {
         File f = new File(bestandslocatie);
         if(!f.exists() && f.isDirectory()) {
@@ -115,7 +121,6 @@ public class W2OPD2OutBinaryBuffer implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
     }
     
     @Override
@@ -127,8 +132,6 @@ public class W2OPD2OutBinaryBuffer implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
     }
     //</editor-fold>
-
 }

@@ -6,7 +6,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,15 +46,12 @@ public class W2OPD2OutTextBuffer implements Observer{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         W2OPD2OutTextBuffer console = new W2OPD2OutTextBuffer();
         console.start();        
     }
-
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    
     private void start() {
         try {
             file = controle("/home/phinux/Workspaces/Portable/Edges");
@@ -64,7 +64,11 @@ public class W2OPD2OutTextBuffer implements Observer{
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
-        
+        try {
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     File controle(String bestandslocatie) throws IOException {
@@ -103,7 +107,6 @@ public class W2OPD2OutTextBuffer implements Observer{
                 System.out.println("Let op, invoer moet een getal zijn!");
                 input.nextLine();
             }
-
         }
         return invoer;
     }
@@ -115,7 +118,6 @@ public class W2OPD2OutTextBuffer implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
     }
     
     @Override
@@ -127,8 +129,6 @@ public class W2OPD2OutTextBuffer implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
     }
     //</editor-fold>
-
 }

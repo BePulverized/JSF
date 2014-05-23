@@ -5,7 +5,10 @@ import callculate.KochFractal;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,11 +48,9 @@ public class W2OPD2OutText implements Observer{
         W2OPD2OutText console = new W2OPD2OutText();
         console.start();        
     }
-
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    
     private void start() {
         try {
             file = controle("/home/phinux/Workspaces/Portable/Edges");
@@ -62,7 +63,11 @@ public class W2OPD2OutText implements Observer{
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
-        
+        try {
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     File controle(String bestandslocatie) throws IOException {
@@ -112,7 +117,6 @@ public class W2OPD2OutText implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
     }
     
     @Override
@@ -124,8 +128,6 @@ public class W2OPD2OutText implements Observer{
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
     }
     //</editor-fold>
-
 }
