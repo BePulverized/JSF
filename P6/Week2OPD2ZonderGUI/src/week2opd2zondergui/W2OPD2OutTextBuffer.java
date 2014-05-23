@@ -47,14 +47,14 @@ public class W2OPD2OutTextBuffer implements Observer{
      */
     public static void main(String[] args) {
         W2OPD2OutTextBuffer console = new W2OPD2OutTextBuffer();
-        console.start();        
+        console.start(args[0]);        
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    private void start() {
+    private void start(String fileDir) {
         try {
-            file = controle("/home/phinux/Workspaces/Portable/Edges");
+            file = controle(fileDir);
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }

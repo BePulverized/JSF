@@ -44,16 +44,15 @@ public class W2OPD2OutText implements Observer{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         W2OPD2OutText console = new W2OPD2OutText();
-        console.start();        
+        console.start(args[0]);        
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    private void start() {
+    private void start(String fileDir) {
         try {
-            file = controle("/home/phinux/Workspaces/Portable/Edges");
+            file = controle(fileDir);
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutText.class.getName()).log(Level.SEVERE, null, ex);
         }

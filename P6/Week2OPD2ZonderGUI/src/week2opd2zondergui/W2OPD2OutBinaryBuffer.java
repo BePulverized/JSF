@@ -47,16 +47,15 @@ public class W2OPD2OutBinaryBuffer implements Observer{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         W2OPD2OutBinaryBuffer console = new W2OPD2OutBinaryBuffer();
-        console.start();        
+        console.start(args[0]);        
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Operations">
-    private void start() {
+    private void start(String fileDir) {
         try {
-            file = controle("/home/phinux/Workspaces/Portable/Edges");
+            file = controle(fileDir);
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
