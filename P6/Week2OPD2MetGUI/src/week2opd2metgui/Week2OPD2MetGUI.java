@@ -1,3 +1,4 @@
+//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package week2opd2metgui;
 
 import callculate.Edge;
@@ -24,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+//</editor-fold>
 
 /**
  * In this class you can find all properties and operations for Week2OPD2MetGUI.
@@ -33,8 +35,10 @@ import javafx.stage.Stage;
  * @date 15-mei-2014
  */
 public class Week2OPD2MetGUI extends Application {
+
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     // Zoom and drag
+
     private double zoomTranslateX = 0.0;
     private double zoomTranslateY = 0.0;
     private double zoom = 1.0;
@@ -44,9 +48,9 @@ public class Week2OPD2MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private File file = new File("/home/phinux/Workspaces/Portable/Edges");
+    private File file = new File("/home/jeroen/Data/Workspaces/Portable/Edge");
     private int level = 1;
-    
+
     // Labels for level, nr edges, calculation time, and drawing time
     private Label labelLevel;
     private Label labelNrEdges;
@@ -55,53 +59,54 @@ public class Week2OPD2MetGUI extends Application {
     private Label labelCalcText;
     private Label labelDraw;
     private Label labelDrawText;
-    
+
     // Koch panel and its size
     private Canvas kochPanel;
     private final int kpWidth = 500;
     private final int kpHeight = 500;
     //</editor-fold>
-    
+
+    //<editor-fold desc="Operations">
+    //<editor-fold defaultstate="collapsed" desc="Start">
     @Override
     public void start(Stage primaryStage) {
-       
+
         // Define grid pane
         GridPane grid;
         grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        
+
         // For debug purposes
         // Make de grid lines visible
         // grid.setGridLinesVisible(true);
-        
         // Drawing panel for Koch fractal
-        kochPanel = new Canvas(kpWidth,kpHeight);
+        kochPanel = new Canvas(kpWidth, kpHeight);
         grid.add(kochPanel, 0, 3, 25, 1);
-        
+
         // Labels to present number of edges for Koch fractal
         labelNrEdges = new Label("Nr edges:");
         labelNrEdgesText = new Label();
         grid.add(labelNrEdges, 0, 0, 4, 1);
         grid.add(labelNrEdgesText, 3, 0, 22, 1);
-        
+
         // Labels to present time of calculation for Koch fractal
         labelCalc = new Label("Calculating:");
         labelCalcText = new Label();
         grid.add(labelCalc, 0, 1, 4, 1);
         grid.add(labelCalcText, 3, 1, 22, 1);
-        
+
         // Labels to present time of drawing for Koch fractal
         labelDraw = new Label("Drawing:");
         labelDrawText = new Label();
         grid.add(labelDraw, 0, 2, 4, 1);
         grid.add(labelDrawText, 3, 2, 22, 1);
-        
+
         // Label to present current level of Koch fractal
         labelLevel = new Label("Level: " + level);
         grid.add(labelLevel, 0, 6);
-        
+
         // Button to fit Koch fractal in Koch panel
         Button buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
@@ -112,25 +117,25 @@ public class Week2OPD2MetGUI extends Application {
             }
         });
         grid.add(buttonFitFractal, 14, 6);
-        
+
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMouseClicked(event);
-                }
-            });
-        
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        kochPanelMouseClicked(event);
+                    }
+                });
+
         // Add mouse pressed event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMousePressed(event);
-                }
-            });
-        
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        kochPanelMousePressed(event);
+                    }
+                });
+
         // Add mouse dragged event to Koch panel
         kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
@@ -138,92 +143,88 @@ public class Week2OPD2MetGUI extends Application {
                 kochPanelMouseDragged(event);
             }
         });
-        
+
         // Create Koch manager and set initial level
         resetZoom();
-        
+
         // Create the scene and add the grid pane
         Group root = new Group();
-        Scene scene = new Scene(root, kpWidth+50, kpHeight+170);
+        Scene scene = new Scene(root, kpWidth + 50, kpHeight + 170);
         root.getChildren().add(grid);
-        
+
         // Define title and assign the scene for main window
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-        
+
     }
-    
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Draw methodes">
     public void clearKochPanel() {
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
-        gc.clearRect(0.0,0.0,kpWidth,kpHeight);
+        gc.clearRect(0.0, 0.0, kpWidth, kpHeight);
         gc.setFill(Color.BLACK);
-        gc.fillRect(0.0,0.0,kpWidth,kpHeight);
+        gc.fillRect(0.0, 0.0, kpWidth, kpHeight);
     }
-    
+
     public void drawEdges() throws ClassNotFoundException, FileNotFoundException, IOException {
-            clearKochPanel();
-            FileInputStream fis;
-            ObjectInputStream in;
-            
-            fis = new FileInputStream(file);
-            in = new ObjectInputStream(fis);
-            
-            level = (int) in.readObject();
-            int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
-            
-            for(int i=0; i < nrOfEdges; i++){
-                drawEdge((Edge) in.readObject());
-            }
-            in.close();
-        
+        clearKochPanel();
+        FileInputStream fis;
+        ObjectInputStream in;
+
+        fis = new FileInputStream(file);
+        in = new ObjectInputStream(fis);
+
+        level = (int) in.readObject();
+        int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
+
+        for (int i = 0; i < nrOfEdges; i++) {
+            drawEdge((Edge) in.readObject());
+        }
+        in.close();
     }
-    
+
     public void drawEdge(Edge e) {
         // Graphics
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
-        
+
         // Adjust edge for zoom and drag
         Edge e1 = edgeAfterZoomAndDrag(e);
-        
+
         // Set line color
         gc.setStroke(e1.getColor());
-        
+
         // Set line width depending on level
         if (level <= 3) {
             gc.setLineWidth(2.0);
-        }
-        else if (level <=5 ) {
+        } else if (level <= 5) {
             gc.setLineWidth(1.5);
-        }
-        else {
+        } else {
             gc.setLineWidth(1.0);
         }
-        
+
         // Draw line
-        gc.strokeLine(e1.X1,e1.Y1,e1.X2,e1.Y2);
+        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
-    
-    
+
     //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Setters">
-    
     public void setTextNrEdges(String text) {
         labelNrEdgesText.setText(text);
     }
-    
+
     public void setTextCalc(String text) {
         labelCalcText.setText(text);
     }
-    
+
     public void setTextDraw(String text) {
         labelDrawText.setText(text);
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Events">
+    //<editor-fold defaultstate="collapsed" desc="Fit Button">
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();
         try {
@@ -234,10 +235,12 @@ public class Week2OPD2MetGUI extends Application {
             Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Panel Clicked">
     private void kochPanelMouseClicked(MouseEvent event) {
-        if (Math.abs(event.getX() - startPressedX) < 1.0 && 
-            Math.abs(event.getY() - startPressedY) < 1.0) {
+        if (Math.abs(event.getX() - startPressedX) < 1.0
+                && Math.abs(event.getY() - startPressedY) < 1.0) {
             double originalPointClickedX = (event.getX() - zoomTranslateX) / zoom;
             double originalPointClickedY = (event.getY() - zoomTranslateY) / zoom;
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -255,7 +258,10 @@ public class Week2OPD2MetGUI extends Application {
                 Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }                          
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Panel Dragged">
     private void kochPanelMouseDragged(MouseEvent event) {
         zoomTranslateX = zoomTranslateX + event.getX() - lastDragX;
         zoomTranslateY = zoomTranslateY + event.getY() - lastDragY;
@@ -269,15 +275,18 @@ public class Week2OPD2MetGUI extends Application {
             Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Mouse Pressed">
     private void kochPanelMousePressed(MouseEvent event) {
         startPressedX = event.getX();
         startPressedY = event.getY();
         lastDragX = event.getX();
         lastDragY = event.getY();
-    }                           
+    }
+    //</editor-fold>
     //</editor-fold>   
-    
+
     //<editor-fold defaultstate="collapsed" desc="Zoom">
     private void resetZoom() {
         int kpSize = Math.min(kpWidth, kpHeight);
@@ -294,8 +303,9 @@ public class Week2OPD2MetGUI extends Application {
                 e.Y2 * zoom + zoomTranslateY,
                 e.getColor());
     }
-//</editor-fold>
-    
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="main(args)">
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be
@@ -307,4 +317,6 @@ public class Week2OPD2MetGUI extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    //</editor-fold>
+    //</editor-fold>
 }
