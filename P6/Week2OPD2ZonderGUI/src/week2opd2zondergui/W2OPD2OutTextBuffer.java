@@ -1,3 +1,4 @@
+//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package week2opd2zondergui;
 
 import callculate.Edge;
@@ -12,6 +13,7 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+//</editor-fold>
 
 /**
  * Console aplicatie die de berekende Edges in een file zet. Deze console
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
  * @author Anne Toonen
  * @date 2014/03/19
  */
-public class W2OPD2OutTextBuffer implements Observer{
+public class W2OPD2OutTextBuffer implements Observer {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final Scanner input;
@@ -37,20 +39,20 @@ public class W2OPD2OutTextBuffer implements Observer{
     //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
     public W2OPD2OutTextBuffer() {
         input = new Scanner(System.in);
-        this.koch = new KochFractal(); 
-        koch.addObserver(this);     
+        this.koch = new KochFractal();
+        koch.addObserver(this);
     }
-    
+
     /**
      *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         W2OPD2OutTextBuffer console = new W2OPD2OutTextBuffer();
-        console.start(args[0]);        
+        console.start(args[0]);
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Operations">
     private void start(String fileDir) {
         try {
@@ -60,29 +62,28 @@ public class W2OPD2OutTextBuffer implements Observer{
         }
         int choice = kiesLevel();
         koch.setLevel(choice);
-        openFileStream();
+        openFileStream(choice);
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
         try {
-            fw.close();
+            out.close();
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     File controle(String bestandslocatie) throws IOException {
         File f = new File(bestandslocatie);
-        if(!f.exists() && f.isDirectory()) {
-          f = new File(bestandslocatie + "/Edges"); 
-          f.createNewFile(); 
-        } 
-        else if(!f.exists() && !f.isDirectory()){
+        if (!f.exists() && f.isDirectory()) {
+            f = new File(bestandslocatie + "/Edges");
+            f.createNewFile();
+        } else if (!f.exists() && !f.isDirectory()) {
             f.createNewFile();
         }
-        return f;         
+        return f;
     }
-    
+
     int kiesLevel() {
         System.out.println();
         int maxNr = 10;
@@ -94,7 +95,7 @@ public class W2OPD2OutTextBuffer implements Observer{
         input.nextLine();
         return nr;
     }
-    
+
     int readInt(String helptekst) {
         boolean invoerOk = false;
         int invoer = -1;
@@ -110,22 +111,23 @@ public class W2OPD2OutTextBuffer implements Observer{
         }
         return invoer;
     }
-    
-    private void openFileStream(){
+
+    private void openFileStream(int level) {
         try {
-            fw  = new FileWriter(file);
+            fw = new FileWriter(file);
             out = new BufferedWriter(fw);
+            out.write(level + "\n");
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public void update(Observable o, Object arg) {
-            Edge e = (Edge) arg;
-            
+        Edge e = (Edge) arg;
         try {
             out.write(e.toString());
+            out.write("\n");
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutTextBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }

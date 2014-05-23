@@ -1,3 +1,4 @@
+//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package week2opd2zondergui;
 
 import callculate.Edge;
@@ -12,6 +13,7 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+//</editor-fold>
 
 /**
  * Console aplicatie die de berekende Edges in een file zet. Deze console
@@ -60,7 +62,7 @@ public class W2OPD2OutBinary implements Observer {
         }
         int choice = kiesLevel();
         koch.setLevel(choice);
-        openFileStream();
+        openFileStream(choice);
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
@@ -111,10 +113,11 @@ public class W2OPD2OutBinary implements Observer {
         return invoer;
     }
 
-    private void openFileStream() {
+    private void openFileStream(int level) {
         try {
             fos = new FileOutputStream(file);
             out = new ObjectOutputStream(fos);
+            out.writeObject(level);
         } catch (IOException ex) {
             Logger.getLogger(W2OPD2OutBinary.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -123,7 +126,6 @@ public class W2OPD2OutBinary implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         Edge e = (Edge) arg;
-
         try {
             out.writeObject(e);
         } catch (IOException ex) {
