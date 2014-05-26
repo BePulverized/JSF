@@ -17,8 +17,7 @@ import java.util.logging.Logger;
 //</editor-fold>
 
 /**
- * In this class you can find all properties and operations for BinaryBuffer.
- * //CHECK
+ * In this class you can find all properties and operations for BinaryBuffer. //CHECK
  *
  * @organization: Moridrin
  * @author J.B.A.J. Berkvens
@@ -49,7 +48,7 @@ public class BinaryBuffer implements Observer {
         BinaryBuffer console = new BinaryBuffer();
         String file;
         if (args.length < 1) {
-            file = "/tmp/Edge";
+            file = "/home/jeroen/tmpEdge";
         } else {
             file = args[0];
         }
@@ -72,6 +71,10 @@ public class BinaryBuffer implements Observer {
         koch.generateRightEdge();
         try {
             out.close();
+            File file2 = new File("/home/jeroen/Edge");
+            if (!file.renameTo(file2)) {
+                throw new java.io.IOException("file not renamed correctly");
+            }
         } catch (IOException ex) {
             Logger.getLogger(BinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,7 +83,7 @@ public class BinaryBuffer implements Observer {
     File controle(String bestandslocatie) throws IOException {
         File f = new File(bestandslocatie);
         if (!f.exists() && f.isDirectory()) {
-            f = new File(bestandslocatie + "/Edges");
+            f = new File(bestandslocatie + "/Edge");
             f.createNewFile();
         } else if (!f.exists() && !f.isDirectory()) {
             f.createNewFile();
