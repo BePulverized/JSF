@@ -1,15 +1,13 @@
 //<editor-fold defaultstate="collapsed" desc="Jibberish">
 package calculate;
 
-import callable.BottomEdgeTask;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-import javafx.application.Platform;
 import fx.JSF31KochFractalFX;
-import runnable.BottomEdge;
-import runnable.LeftEdge;
-import runnable.RightEdge;
+import java.util.ArrayList;
+import javafx.concurrent.Task;
+import javafx.scene.paint.Color;
+import runnable.BottomEdgeTask;
+import runnable.LeftEdgeTask;
+import runnable.RightEdgeTask;
 import timeutil.TimeStamp;
 //</editor-fold>
 
@@ -20,7 +18,7 @@ import timeutil.TimeStamp;
  * @author Anne Toonen
  * @date 2014/03/19
  */
-public class KochManager implements Observer {
+public class KochManager {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final JSF31KochFractalFX application;
@@ -29,11 +27,13 @@ public class KochManager implements Observer {
     private int counter;
     public TimeStamp ts1;
     public TimeStamp ts2;
-    
-    //</editor-fold>   
+    public BottomEdgeTask bottomEdgeTask;
+    public LeftEdgeTask leftEdgeTask;
+    public RightEdgeTask rightEdgeTask;
+    //</editor-fold>  
 
     //<editor-fold desc="Operations">
-    //<editor-fold defaultstate="collapsed" desc="Constructor()">
+    //<editor-fold defaultstate="collapsed" desc="Constructor(application)">
     /**
      * This is the constructor for KochObserver.
      *
@@ -42,60 +42,95 @@ public class KochManager implements Observer {
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
         this.koch = new KochFractal();
-        
-
         edges = new ArrayList<>();
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="changeLevel(level)">
     public synchronized void changeLevel(int level) {
+        cancel();
+        application.allCancelButton.setDisable(false);
+        application.clearKochPanel();
         koch.setLevel(level);
         edges.clear();
         this.ts1 = new TimeStamp();
         ts1.setBegin();
 
         counter = 0;
-        Thread bottomThread = new Thread(new BottomEdgeTask(this, new KochFractal(), level));
+        application.bottomCancelButton.setDisable(false);
+        bottomEdgeTask = new BottomEdgeTask(this, new KochFractal(), level);
+        Thread bottomThread = new Thread(bottomEdgeTask);
+        application.bottomProgressBar.progressProperty().bind(bottomEdgeTask.progressProperty());
+        application.bottomLabel.textProperty().bind(bottomEdgeTask.messageProperty());
         bottomThread.start();
 
-        Thread leftThread = new Thread(new LeftEdge(this, new KochFractal(), level));
+        application.leftCancelButton.setDisable(false);
+        leftEdgeTask = new LeftEdgeTask(this, new KochFractal(), level);
+        Thread leftThread = new Thread(leftEdgeTask);
+        application.leftProgressBar.progressProperty().bind(leftEdgeTask.progressProperty());
+        application.leftLabel.textProperty().bind(leftEdgeTask.messageProperty());
         leftThread.start();
 
-        Thread rightThread = new Thread(new RightEdge(this, new KochFractal(), level));
+        application.rightCancelButton.setDisable(false);
+        rightEdgeTask = new RightEdgeTask(this, new KochFractal(), level);
+        Thread rightThread = new Thread(rightEdgeTask);
+        application.rightProgressBar.progressProperty().bind(rightEdgeTask.progressProperty());
+        application.rightLabel.textProperty().bind(rightEdgeTask.messageProperty());
         rightThread.start();
     }
+    //</editor-fold>
 
-    public synchronized void plus(){
+    //<editor-fold defaultstate="collapsed" desc="plus()">
+    public synchronized void plus(Task caller) {
+        if (caller instanceof BottomEdgeTask) {
+            application.bottomCancelButton.setDisable(true);
+        } else if (caller instanceof LeftEdgeTask) {
+            application.leftCancelButton.setDisable(true);
+        } else if (caller instanceof RightEdgeTask) {
+            application.rightCancelButton.setDisable(true);
+        }
         counter++;
-        if(counter >= 3){
+        if (counter >= 3) {
+            application.allCancelButton.setDisable(true);
             ts1.setEnd();
             application.requestDrawEdges();
-        }       
+        }
     }
-    
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="drawEdges()">
     public synchronized void drawEdges() {
-        application.setTextCalc(ts1.toString());
-        application.setTextNrEdges(String.valueOf(koch.getNrOfEdges()));
+        application.setTextNrEdges(String.valueOf(edges.size()));
         ts2 = new TimeStamp();
         ts2.setBegin();
         application.clearKochPanel();
 
         for (Edge e : edges) {
-            application.drawEdge(e);
+            application.callDrawEdge(e);
         }
         ts2.setEnd();
-        application.setTextDraw(ts2.toString());
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="updateEdges(e)">
     public synchronized void updateEdges(Edge e) {
         edges.add(e);
+        Edge e1 = e.clone();
+        e1.color = Color.WHITE;
+        application.callDrawEdge(e1);
     }
+    //</editor-fold>
 
-    @Override
-    public void update(Observable o, Object arg) {
-        //application.drawEdge((Edge) arg);
-        edges.add((Edge) arg);
+    //<editor-fold defaultstate="collapsed" desc="cancel()">
+    public void cancel() {
+        try {
+            bottomEdgeTask.cancel();
+            leftEdgeTask.cancel();
+            rightEdgeTask.cancel();
+        } catch (NullPointerException exception) {
+            //Do nothing.
+        }
     }
-
+    //</editor-fold>
     //</editor-fold>
 }

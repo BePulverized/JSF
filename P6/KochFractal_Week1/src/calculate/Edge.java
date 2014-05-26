@@ -5,6 +5,8 @@
 
 package calculate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.paint.Color;
 
 /**
@@ -21,5 +23,10 @@ public class Edge {
         this.X2 = X2;
         this.Y2 = Y2;
         this.color = color;
+    }
+
+    @Override
+    public Edge clone() {
+        return new Edge(X1, Y1, X2, Y2, color);
     }
 }

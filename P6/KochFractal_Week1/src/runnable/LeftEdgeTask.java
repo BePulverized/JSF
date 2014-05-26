@@ -18,7 +18,7 @@ import javafx.concurrent.Task;
  *
  * @author jeroen
  */
-public class BottomEdgeTask extends Task<List<Edge>> implements Observer {
+public class LeftEdgeTask extends Task<List<Edge>> implements Observer {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final KochFractal kochFractal;
@@ -29,7 +29,7 @@ public class BottomEdgeTask extends Task<List<Edge>> implements Observer {
 
     //<editor-fold desc="Operations">
     //<editor-fold defaultstate="collapsed" desc="Constructor(kochManager, kochFractal, level)">
-    public BottomEdgeTask(KochManager kochManager, KochFractal kochFractal, int level) {
+    public LeftEdgeTask(KochManager kochManager, KochFractal kochFractal, int level) {
         this.kochManager = kochManager;
         this.kochFractal = kochFractal;
         this.kochFractal.setLevel(level);
@@ -41,7 +41,7 @@ public class BottomEdgeTask extends Task<List<Edge>> implements Observer {
     //<editor-fold defaultstate="collapsed" desc="call()">
     @Override
     protected List<Edge> call() throws Exception {
-        kochFractal.generateBottomEdge();
+        kochFractal.generateLeftEdge();
         kochManager.plus(this);
 
         return null;
@@ -84,5 +84,6 @@ public class BottomEdgeTask extends Task<List<Edge>> implements Observer {
             }
         }
     }
+    //</editor-fold>
     //</editor-fold>
 }
