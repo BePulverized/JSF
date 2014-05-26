@@ -1,39 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
+//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package kochFractal_week3;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//</editor-fold>
 
 /**
+ * In this class you can find all properties and operations for KochFractal.
  *
- * @author Peter Boots
+ * @organization: Moridrin
+ * @author J.B.A.J. Berkvens
+ * @date 2014/05/24
  */
-public class KochFractal{
+public class KochFractal {
 
+    //<editor-fold defaultstate="collapsed" desc="Declarations">
     private int level = 1;      // The current level of the fractal
     private int nrOfEdges = 3;  // The number of edges in the current level of the fractal
     private float hue;          // Hue value of color for next edge
@@ -42,11 +27,41 @@ public class KochFractal{
     private double endTime = 0;
     int count = 0;
     private ArrayList<Edge> edges = new ArrayList<Edge>();
-    
-    
-   
-    
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    //<editor-fold defaultstate="collapsed" desc="getEdges()">
+    public ArrayList getEdges() {
+        return edges;
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Level">
+    public void setLevel(int lvl) {
+        level = lvl;
+        nrOfEdges = (int) (3 * Math.pow(4, level - 1));
+    }
+
+    public int getLevel() {
+        return level;
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="getNrOfEdges()">
+    public int getNrOfEdges() {
+        return nrOfEdges;
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="getEndTime()">
+    public double getEndTime() {
+        return (endTime - beginTime) / 1000;
+    }
+    //</editor-fold>
+    //</editor-fold>
+
+    //<editor-fold desc="Operations">
+    //<editor-fold defaultstate="collapsed" desc="drawKochEdge(ax, ay, bx, by, n)">
     private void drawKochEdge(double ax, double ay, double bx, double by, int n) {
         Edge e;
         if (!cancelled) {
@@ -54,7 +69,7 @@ public class KochFractal{
                 hue = hue + 1.0f / nrOfEdges;
                 e = new Edge(ax, ay, bx, by);
                 edges.add(e);
-                
+
                 count++;
             } else {
                 double angle = Math.PI / 3.0 + Math.atan2(by - ay, bx - ax);
@@ -70,55 +85,35 @@ public class KochFractal{
             }
         }
     }
-    
-    public ArrayList getEdges()
-    {
-        return edges;
-    }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="generateLeftEdge()">
     public void generateLeftEdge() {
         hue = 0f;
         cancelled = false;
         drawKochEdge(0.5, 0.0, (1 - Math.sqrt(3.0) / 2.0) / 2, 0.75, level);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="generateBottomEdge()">
     public void generateBottomEdge() {
         hue = 1f / 3f;
         cancelled = false;
         drawKochEdge((1 - Math.sqrt(3.0) / 2.0) / 2, 0.75, (1 + Math.sqrt(3.0) / 2.0) / 2, 0.75, level);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="generateRightEdge()">
     public void generateRightEdge() {
         hue = 2f / 3f;
         cancelled = false;
         drawKochEdge((1 + Math.sqrt(3.0) / 2.0) / 2, 0.75, 0.5, 0.0, level);
-        
-    }
-    
-    public void cancel() {
-        cancelled = true;
-    }
 
-    public void setLevel(int lvl) {
-        level = lvl;
-        nrOfEdges = (int) (3 * Math.pow(4, level - 1));
     }
+    //</editor-fold>
 
-    public int getLevel() {
-        return level;
-    }
-
-    public int getNrOfEdges() {
-        return nrOfEdges;
-    }
-    
-    public double getEndTime()
-    {
-        return (endTime - beginTime)/1000;
-    }
-    
-    
-    public void writeEdge(ArrayList<Edge> edges) throws FileNotFoundException, IOException {
+    //<editor-fold defaultstate="collapsed" desc="writeEdges(edges)">
+    public void writeEdges(ArrayList<Edge> edges) throws FileNotFoundException, IOException {
         //mapping writer
         RandomAccessFile memoryMappedFile = new RandomAccessFile("EdgeFile.txt", "rw");
         int size = edges.toString().getBytes().length;
@@ -126,69 +121,20 @@ public class KochFractal{
         out.position(0);
         out.putInt(level);
         out.putInt(nrOfEdges);
-        for(Edge edge : edges)
-        {
+        for (Edge edge : edges) {
             out.putDouble(edge.X1);
             out.putDouble(edge.Y1);
             out.putDouble(edge.X2);
             out.putDouble(edge.Y2);
         }
         System.out.println("Writing to memory mapped file is completed");
-        
-        //<editor-fold defaultstate="collapsed" desc="oude writer">
-            //oude writer
-        /*FileWriter fw;
-        FileWriter fwB;
-        beginTime = System.currentTimeMillis();
-        
-        try {       
-            //Naar binaire file zonder buffer            
-      
-//           ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("Edges.bin"));
-//           for(Edge edge : edges)
-//           {
-//               out.writeObject(edge);
-//           }
-//           out.close();          
-            
-            //Naar binaire file met buffer
-           
-           ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("Edges.bin")));
-           for(Edge edge : edges)
-           {
-               out.writeObject(edge);
-           }
-           out.close();
-            
-//            Naar textfile zonder buffer
-            
-//            fw = new FileWriter("Edges.txt");
-//            PrintWriter pr = new PrintWriter(fw);
-//            for(Edge edge : edges)
-//            {
-//                pr.println(edge.toString());
-//            }
-//            pr.close();
-            
-            //Naar textfile met buffer
-         
-//            fw = new FileWriter("Edges.txt");
-//            BufferedWriter pr = new BufferedWriter(fw);
-//            for(Edge edge : edges)
-//            {
-//                pr.write(edge.toString());                
-//            }
-//            pr.close();
-            
-            endTime = System.currentTimeMillis();
-        }
-        catch(IOException ex)
-        {
-            
-        }*/
-        //</editor-fold>
-         
     }
-    
-}
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="cancel()">
+    public void cancel() {
+        cancelled = true;
+    }
+    //</editor-fold>
+    //</editor-fold>
+}
