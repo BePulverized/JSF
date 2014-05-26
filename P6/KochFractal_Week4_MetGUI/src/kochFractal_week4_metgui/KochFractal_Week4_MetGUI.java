@@ -28,17 +28,17 @@ import javafx.stage.Stage;
 //</editor-fold>
 
 /**
- * In this class you can find all properties and operations for Week2OPD2MetGUI.
+ * In this class you can find all properties and operations for KochFractal_Week4_MetGUI.
+ * //CHECK
  *
  * @organization: Moridrin
- * @author phinux
- * @date 15-mei-2014
+ * @author J.B.A.J. Berkvens
+ * @date 2014/05/26
  */
-public class Week2OPD2MetGUI extends Application {
+public class KochFractal_Week4_MetGUI extends Application {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     // Zoom and drag
-
     private double zoomTranslateX = 0.0;
     private double zoomTranslateY = 0.0;
     private double zoom = 1.0;
@@ -48,7 +48,7 @@ public class Week2OPD2MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private File file = new File("/home/jeroen/Data/Workspaces/Portable/Edge");
+    private File file = new File("/tmp/Edge");
     private int level = 1;
 
     // Labels for level, nr edges, calculation time, and drawing time
@@ -120,21 +120,21 @@ public class Week2OPD2MetGUI extends Application {
 
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        kochPanelMouseClicked(event);
-                    }
-                });
+                                  new EventHandler<MouseEvent>() {
+                                      @Override
+                                      public void handle(MouseEvent event) {
+                                          kochPanelMouseClicked(event);
+                                      }
+                                  });
 
         // Add mouse pressed event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        kochPanelMousePressed(event);
-                    }
-                });
+                                  new EventHandler<MouseEvent>() {
+                                      @Override
+                                      public void handle(MouseEvent event) {
+                                          kochPanelMousePressed(event);
+                                      }
+                                  });
 
         // Add mouse dragged event to Koch panel
         kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -207,8 +207,8 @@ public class Week2OPD2MetGUI extends Application {
         // Draw line
         gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
-
     //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Setters">
     public void setTextNrEdges(String text) {
         labelNrEdgesText.setText(text);
@@ -230,9 +230,9 @@ public class Week2OPD2MetGUI extends Application {
         try {
             drawEdges();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //</editor-fold>
@@ -240,7 +240,7 @@ public class Week2OPD2MetGUI extends Application {
     //<editor-fold defaultstate="collapsed" desc="Panel Clicked">
     private void kochPanelMouseClicked(MouseEvent event) {
         if (Math.abs(event.getX() - startPressedX) < 1.0
-                && Math.abs(event.getY() - startPressedY) < 1.0) {
+            && Math.abs(event.getY() - startPressedY) < 1.0) {
             double originalPointClickedX = (event.getX() - zoomTranslateX) / zoom;
             double originalPointClickedY = (event.getY() - zoomTranslateY) / zoom;
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -253,9 +253,9 @@ public class Week2OPD2MetGUI extends Application {
             try {
                 drawEdges();
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -270,9 +270,9 @@ public class Week2OPD2MetGUI extends Application {
         try {
             drawEdges();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Week2OPD2MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //</editor-fold>
@@ -307,10 +307,9 @@ public class Week2OPD2MetGUI extends Application {
 
     //<editor-fold defaultstate="collapsed" desc="main(args)">
     /**
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
+     * The main() method is ignored in correctly deployed JavaFX application. main() serves only as fallback in case the
+     * application can not be launched through deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
+     * main().
      *
      * @param args the command line arguments
      */
