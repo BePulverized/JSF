@@ -17,17 +17,14 @@ import java.util.logging.Logger;
 //</editor-fold>
 
 /**
- * Console aplicatie die de berekende Edges in een file zet. Deze console
- * applicatie vraagt aan de gebruiker voor welk level de edges gegenereerd
- * moeten worden, en zet die edges vervolgens in een file (dus niet in een
- * array, en ook niet tekenen). Het level moet ook in de file staan. De
- * betreffende file moet zich op de hierboven gemounte nieuwe disk bevinden.
+ * In this class you can find all properties and operations for BinaryBuffer.
+ * //CHECK
  *
  * @organization: Moridrin
- * @author Anne Toonen
- * @date 2014/03/19
+ * @author J.B.A.J. Berkvens
+ * @date 2014/05/26
  */
-public class W2OPD2OutBinaryBuffer implements Observer {
+public class BinaryBuffer implements Observer {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final Scanner input;
@@ -38,7 +35,7 @@ public class W2OPD2OutBinaryBuffer implements Observer {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
-    public W2OPD2OutBinaryBuffer() {
+    public BinaryBuffer() {
         input = new Scanner(System.in);
         this.koch = new KochFractal();
         koch.addObserver(this);
@@ -49,8 +46,14 @@ public class W2OPD2OutBinaryBuffer implements Observer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        W2OPD2OutBinaryBuffer console = new W2OPD2OutBinaryBuffer();
-        console.start(args[0]);
+        BinaryBuffer console = new BinaryBuffer();
+        String file;
+        if (args.length < 1) {
+            file = "/tmp/Edge";
+        } else {
+            file = args[0];
+        }
+        console.start(file);
     }
     //</editor-fold>
 
@@ -59,7 +62,7 @@ public class W2OPD2OutBinaryBuffer implements Observer {
         try {
             file = controle(fileDir);
         } catch (IOException ex) {
-            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
         int choice = kiesLevel();
         koch.setLevel(choice);
@@ -70,7 +73,7 @@ public class W2OPD2OutBinaryBuffer implements Observer {
         try {
             out.close();
         } catch (IOException ex) {
-            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -120,7 +123,7 @@ public class W2OPD2OutBinaryBuffer implements Observer {
             out = new ObjectOutputStream(new BufferedOutputStream(fos));
             out.writeObject(level);
         } catch (IOException ex) {
-            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -130,7 +133,7 @@ public class W2OPD2OutBinaryBuffer implements Observer {
         try {
             out.writeObject(e);
         } catch (IOException ex) {
-            Logger.getLogger(W2OPD2OutBinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BinaryBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //</editor-fold>
