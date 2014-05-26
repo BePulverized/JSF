@@ -7,6 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -25,11 +29,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import watchers.WatchDirRunnable;
 //</editor-fold>
 
 /**
- * In this class you can find all properties and operations for KochFractal_Week4_MetGUI.
- * //CHECK
+ * In this class you can find all properties and operations for KochFractal_Week4_MetGUI. //CHECK
  *
  * @organization: Moridrin
  * @author J.B.A.J. Berkvens
@@ -48,7 +53,7 @@ public class KochFractal_Week4_MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private File file = new File("/tmp/Edge");
+    private File file = new File("/home/jeroen/Edge");
     private int level = 1;
 
     // Labels for level, nr edges, calculation time, and drawing time
@@ -64,6 +69,7 @@ public class KochFractal_Week4_MetGUI extends Application {
     private Canvas kochPanel;
     private final int kpWidth = 500;
     private final int kpHeight = 500;
+    private final List<Edge> edges = new ArrayList<>();
     //</editor-fold>
 
     //<editor-fold desc="Operations">
@@ -156,7 +162,16 @@ public class KochFractal_Week4_MetGUI extends Application {
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
+            @Override
+            public void handle(WindowEvent event) {
+                System.exit(0);
+            }
+        });
+
+        createDirWatch(Paths.get("/home/jeroen/"));
+        fitFractalButtonActionPerformed(null);
     }
     //</editor-fold>
 
@@ -168,21 +183,11 @@ public class KochFractal_Week4_MetGUI extends Application {
         gc.fillRect(0.0, 0.0, kpWidth, kpHeight);
     }
 
-    public void drawEdges() throws ClassNotFoundException, FileNotFoundException, IOException {
+    public void drawEdges() {
         clearKochPanel();
-        FileInputStream fis;
-        ObjectInputStream in;
-
-        fis = new FileInputStream(file);
-        in = new ObjectInputStream(fis);
-
-        level = (int) in.readObject();
-        int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
-
-        for (int i = 0; i < nrOfEdges; i++) {
-            drawEdge((Edge) in.readObject());
+        for (Edge edge : edges) {
+            drawEdge(edge);
         }
-        in.close();
     }
 
     public void drawEdge(Edge e) {
@@ -209,6 +214,29 @@ public class KochFractal_Week4_MetGUI extends Application {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="readFile()">
+    public void readFile() throws ClassNotFoundException, FileNotFoundException, IOException {
+        FileInputStream fis;
+        ObjectInputStream in;
+
+        fis = new FileInputStream(file);
+        in = new ObjectInputStream(fis);
+        clearKochPanel();
+
+        level = (int) in.readObject();
+        int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
+        edges.clear();
+
+        for (int i = 0; i < nrOfEdges; i++) {
+            Edge edge = (Edge) in.readObject();
+            drawEdge(edge);
+            edges.add(edge);
+        }
+        in.close();
+        file.delete();
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Setters">
     public void setTextNrEdges(String text) {
         labelNrEdgesText.setText(text);
@@ -224,16 +252,24 @@ public class KochFractal_Week4_MetGUI extends Application {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Events">
-    //<editor-fold defaultstate="collapsed" desc="Fit Button">
-    private void fitFractalButtonActionPerformed(ActionEvent event) {
-        resetZoom();
+    //<editor-fold defaultstate="collapsed" desc="createDirWatch(dir)">
+    private void createDirWatch(Path dir) {
+        // create WatchDirRunnable object to watch the given directory (and possibly recursive)
+        WatchDirRunnable watcher;
         try {
-            drawEdges();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            watcher = new WatchDirRunnable(dir, false, this);
+            new Thread(watcher).start();
         } catch (IOException ex) {
             Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        // create Thread and start watching
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Fit Button">
+    private void fitFractalButtonActionPerformed(ActionEvent event) {
+        resetZoom();
+        drawEdges();
     }
     //</editor-fold>
 
@@ -250,13 +286,7 @@ public class KochFractal_Week4_MetGUI extends Application {
             }
             zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
             zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
-            try {
-                drawEdges();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            drawEdges();
         }
     }
     //</editor-fold>
@@ -267,13 +297,7 @@ public class KochFractal_Week4_MetGUI extends Application {
         zoomTranslateY = zoomTranslateY + event.getY() - lastDragY;
         lastDragX = event.getX();
         lastDragY = event.getY();
-        try {
-            drawEdges();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        drawEdges();
     }
     //</editor-fold>
 
