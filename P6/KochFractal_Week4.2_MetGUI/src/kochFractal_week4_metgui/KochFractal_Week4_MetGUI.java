@@ -3,10 +3,12 @@ package kochFractal_week4_metgui;
 
 import callculate.Edge;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -216,24 +218,39 @@ public class KochFractal_Week4_MetGUI extends Application {
 
     //<editor-fold defaultstate="collapsed" desc="readFile()">
     public void readFile() throws ClassNotFoundException, FileNotFoundException, IOException {
-        FileInputStream fis;
-        ObjectInputStream in;
-
-        fis = new FileInputStream(file);
-        in = new ObjectInputStream(fis);
         clearKochPanel();
-
-        level = (int) in.readObject();
-        int nrOfEdges = (int) (3 * Math.pow(4, level - 1));
         edges.clear();
 
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+        FileChannel fileChannel = randomAccessFile.getChannel();
+        MappedByteBuffer out = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, randomAccessFile.length());
+        FileLock fileLock = null;
+
+        int startLock = 0;
+        int lockLength = 4 + 4;
+        fileLock = fileChannel.lock(startLock, lockLength, false);
+        level = (int) randomAccessFile.readInt();
+        int nrOfEdges = (int) randomAccessFile.readInt();
+        fileLock.release();
+
+        lockLength = (3 * 8) + (4 * 8);
         for (int i = 0; i < nrOfEdges; i++) {
-            Edge edge = (Edge) in.readObject();
+            startLock += lockLength;
+            fileLock = fileChannel.lock(startLock, lockLength, false);
+            double bri = randomAccessFile.readDouble();
+            double hue = randomAccessFile.readDouble();
+            double sat = randomAccessFile.readDouble();
+            double X1 = randomAccessFile.readDouble();
+            double Y1 = randomAccessFile.readDouble();
+            double X2 = randomAccessFile.readDouble();
+            double Y2 = randomAccessFile.readDouble();
+            fileLock.release();
+
+            Edge edge = new Edge(X1, Y1, X2, Y2, Color.AQUA);
             drawEdge(edge);
             edges.add(edge);
         }
-        in.close();
-        file.delete();
+        int i = 0;
     }
     //</editor-fold>
 

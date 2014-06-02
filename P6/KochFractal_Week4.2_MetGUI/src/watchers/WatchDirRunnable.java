@@ -46,7 +46,7 @@ public class WatchDirRunnable implements Runnable {
         // create a default WatchService
         this.kochFractal_Week4_MetGUI = kochFractal_Week4_MetGUI;
         this.watcher = FileSystems.getDefault().newWatchService();
-        this.keys = new HashMap<WatchKey, Path>();
+        this.keys = new HashMap<>();
         this.recursive = recursive;
 
         // register all Paths to watch
