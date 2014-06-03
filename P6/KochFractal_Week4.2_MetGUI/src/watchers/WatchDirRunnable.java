@@ -147,15 +147,11 @@ public class WatchDirRunnable implements Runnable {
                 // print out event
                 System.out.format("%s: %s\n", event.kind().name(), child);
                 if (child.toString().equals("/home/jeroen/Edge")) {
-                    Platform.runLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                kochFractal_Week4_MetGUI.readFile();
-                            } catch (ClassNotFoundException | IOException ex) {
-                                Logger.getLogger(WatchDirRunnable.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                    Platform.runLater(() -> {
+                        try {
+                            kochFractal_Week4_MetGUI.readFile();
+                        } catch (ClassNotFoundException | IOException ex) {
+                            Logger.getLogger(WatchDirRunnable.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
                 }

@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -55,7 +55,7 @@ public class KochFractal_Week4_MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private File file = new File("/home/jeroen/Edge");
+    private final File file = new File("/home/jeroen/Edge");
     private int level = 1;
 
     // Labels for level, nr edges, calculation time, and drawing time
@@ -118,38 +118,24 @@ public class KochFractal_Week4_MetGUI extends Application {
         // Button to fit Koch fractal in Koch panel
         Button buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
-        buttonFitFractal.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fitFractalButtonActionPerformed(event);
-            }
+        buttonFitFractal.setOnAction((ActionEvent event) -> {
+            fitFractalButtonActionPerformed(event);
         });
         grid.add(buttonFitFractal, 14, 6);
 
         // Add mouse clicked event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                                  new EventHandler<MouseEvent>() {
-                                      @Override
-                                      public void handle(MouseEvent event) {
-                                          kochPanelMouseClicked(event);
-                                      }
-                                  });
+        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+            kochPanelMouseClicked(event);
+        });
 
         // Add mouse pressed event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-                                  new EventHandler<MouseEvent>() {
-                                      @Override
-                                      public void handle(MouseEvent event) {
-                                          kochPanelMousePressed(event);
-                                      }
-                                  });
+        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent event) -> {
+            kochPanelMousePressed(event);
+        });
 
         // Add mouse dragged event to Koch panel
-        kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                kochPanelMouseDragged(event);
-            }
+        kochPanel.setOnMouseDragged((MouseEvent event) -> {
+            kochPanelMouseDragged(event);
         });
 
         // Create Koch manager and set initial level
@@ -164,12 +150,8 @@ public class KochFractal_Week4_MetGUI extends Application {
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                System.exit(0);
-            }
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            System.exit(0);
         });
 
         createDirWatch(Paths.get("/home/jeroen/"));
@@ -220,37 +202,59 @@ public class KochFractal_Week4_MetGUI extends Application {
     public void readFile() throws ClassNotFoundException, FileNotFoundException, IOException {
         clearKochPanel();
         edges.clear();
+        new Thread(() -> {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-        FileChannel fileChannel = randomAccessFile.getChannel();
-        MappedByteBuffer out = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, randomAccessFile.length());
-        FileLock fileLock = null;
+            try {
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+                FileChannel fileChannel = randomAccessFile.getChannel();
+                MappedByteBuffer out = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, randomAccessFile.length());
+                FileLock fileLock = null;
 
-        int startLock = 0;
-        int lockLength = 4 + 4;
-        fileLock = fileChannel.lock(startLock, lockLength, false);
-        level = (int) randomAccessFile.readInt();
-        int nrOfEdges = (int) randomAccessFile.readInt();
-        fileLock.release();
+                int startLock = 0;
+                int lockLength = 4 + 4;
+                fileLock = fileChannel.lock(startLock, lockLength, true);
+                level = (int) randomAccessFile.readInt();
+                int nrOfEdges = (int) randomAccessFile.readInt();
+                fileLock.release();
 
-        lockLength = (3 * 8) + (4 * 8);
-        for (int i = 0; i < nrOfEdges; i++) {
-            startLock += lockLength;
-            fileLock = fileChannel.lock(startLock, lockLength, false);
-            double bri = randomAccessFile.readDouble();
-            double hue = randomAccessFile.readDouble();
-            double sat = randomAccessFile.readDouble();
-            double X1 = randomAccessFile.readDouble();
-            double Y1 = randomAccessFile.readDouble();
-            double X2 = randomAccessFile.readDouble();
-            double Y2 = randomAccessFile.readDouble();
-            fileLock.release();
+                lockLength = (3 * 8) + (4 * 8);
+                for (int i = 0; i < nrOfEdges; i++) {
+                    startLock += lockLength;
+                    fileLock = fileChannel.lock(startLock, lockLength, true);
+                    double bri = randomAccessFile.readDouble();
+                    double hue = randomAccessFile.readDouble();
+                    double sat = randomAccessFile.readDouble();
+                    double X1 = randomAccessFile.readDouble();
+                    double Y1 = randomAccessFile.readDouble();
+                    double X2 = randomAccessFile.readDouble();
+                    double Y2 = randomAccessFile.readDouble();
+                    fileLock.release();
 
-            Edge edge = new Edge(X1, Y1, X2, Y2, Color.AQUA);
-            drawEdge(edge);
-            edges.add(edge);
-        }
-        int i = 0;
+                    Platform.runLater(() -> {
+                        Edge whiteEdge = new Edge(X1, Y1, X2, Y2, Color.WHITE);
+                        drawEdge(whiteEdge);
+                    });
+                    Edge edge = new Edge(X1, Y1, X2, Y2, Color.hsb(hue, sat, bri));
+                    edges.add(edge);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Platform.runLater(() -> {
+                drawEdges();
+            });
+        }).start();
+        System.out.println("Done");
     }
     //</editor-fold>
 
@@ -278,6 +282,15 @@ public class KochFractal_Week4_MetGUI extends Application {
             new Thread(watcher).start();
         } catch (IOException ex) {
             Logger.getLogger(KochFractal_Week4_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (new File("/home/jeroen/Edge").exists()) {
+            Platform.runLater(() -> {
+                try {
+                    readFile();
+                } catch (ClassNotFoundException | IOException ex) {
+                    Logger.getLogger(WatchDirRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
         }
         // create Thread and start watching
     }
