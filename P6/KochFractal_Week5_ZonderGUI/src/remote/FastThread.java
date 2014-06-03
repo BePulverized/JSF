@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import kochfractal_week5_zondergui.Socket_Server;
 //</editor-fold>
 
@@ -22,7 +24,7 @@ import kochfractal_week5_zondergui.Socket_Server;
 public class FastThread extends ClientConnector implements IThread, Observer {
 
     //<editor-fold defaultstate="collapsed" desc="Declarations">
-    private List<Edge> edges;
+    private List<Edge> edges = null;
     private final int level;
     private int nrOfEdges;
     //</editor-fold>
@@ -45,23 +47,44 @@ public class FastThread extends ClientConnector implements IThread, Observer {
     @Override
     public void run() {
         String message = null;
-        edges = Socket_Server.getList(level);
+        message = readMessage();
+        if (message.toLowerCase().contains("cash")) {
+            edges = Socket_Server.getList(level);
+            if (edges == null) {
+                message = "No. Sorry.";
+            } else {
+                message = "Yes, I'll send it to you.";
+            }
+            sendObject(message);
+        }
         if (edges == null) {
             edges = new ArrayList<>();
             KochFractal kochFractal = new KochFractal();
             kochFractal.setLevel(level);
             nrOfEdges = kochFractal.getNrOfEdges();
+            sendObject(nrOfEdges);
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(FastThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
             kochFractal.addObserver(this);
             kochFractal.generateLeftEdge();
             kochFractal.generateBottomEdge();
             kochFractal.generateRightEdge();
         } else {
-            for (Edge e : edges) {
-                sendObject(e);
-            }
+            sendObject(edges);
+            finish();
         }
     }
     //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="finish()">
+    private void finish() {
+        Socket_Server.setList(level, edges);
+        String message = "You're Welcome!";
+        sendObject(message);
+    }
 
     //<editor-fold defaultstate="collapsed" desc="update(o, arg)">
     @Override
@@ -69,8 +92,8 @@ public class FastThread extends ClientConnector implements IThread, Observer {
         sendObject(arg);
         Edge e = (Edge) arg;
         edges.add(e);
-        if (edges.size() == nrOfEdges){
-            Socket_Server.setList(level, edges);
+        if (edges.size() == nrOfEdges) {
+            finish();
         }
     }
     //</editor-fold>

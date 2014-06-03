@@ -79,33 +79,43 @@ public class Socket_Server {
         switch (level) {
             case 1: {
                 level1 = list;
+                break;
             }
             case 2: {
                 level2 = list;
+                break;
             }
             case 3: {
                 level3 = list;
+                break;
             }
             case 4: {
                 level4 = list;
+                break;
             }
             case 5: {
                 level5 = list;
+                break;
             }
             case 6: {
                 level6 = list;
+                break;
             }
             case 7: {
                 level7 = list;
+                break;
             }
             case 8: {
                 level8 = list;
+                break;
             }
             case 9: {
                 level9 = list;
+                break;
             }
             case 10: {
                 level10 = list;
+                break;
             }
         }
     }
