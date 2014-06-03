@@ -21,7 +21,7 @@ public class ServerConnecter {
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     //<editor-fold defaultstate="collapsed" desc="Static Finnal">
     private static final int PORT = 6752;
-    private static final String SERVERNAME = "localhost";
+    private static final String SERVERNAME = "85.113.237.162";
     //</editor-fold>
     private Socket clientSocket = null;
     private ObjectInputStream objectInputStream = null;

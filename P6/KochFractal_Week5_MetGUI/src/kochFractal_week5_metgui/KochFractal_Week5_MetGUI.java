@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -208,69 +209,79 @@ public class KochFractal_Week5_MetGUI extends Application {
 
     //<editor-fold defaultstate="collapsed" desc="get(level)">
     public void get(int level) {
-        String message;
-        serverConnecter.connect();
+        new Thread(() -> {
+            String message;
+            serverConnecter.connect();
 
-        //See it you connect to a fractal server
-        message = "Can you please calculate a Fractal for me?";
-        serverConnecter.sendObjectToServer(message);
-        message = serverConnecter.readMessageFromServer();
-        if (!message.toLowerCase().contains("what level")) {
-            return;
-        }
-
-        //Say what level the factal needs to be
-        serverConnecter.sendObjectToServer(level);
-        if (communicationType == CommunicationType.Minimal_Network_Load) {
-            //Say at what speed you want tog get the edges
-            message = "Take you're time, and send it when you're finished calculating.";
+            //See it you connect to a fractal server
+            message = "Can you please calculate a Fractal for me?";
             serverConnecter.sendObjectToServer(message);
-
-            //Get the edges
-            clearKochPanel();
-            edges.clear();
-            edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
-        } else {
-            //Say at what speed you want tog get the edges
-            message = "I need each edge as fast as possible!";
-            serverConnecter.sendObjectToServer(message);
-
-            //Clear Local
-            clearKochPanel();
-            edges.clear();
-            
-            //Ask if the server has the list in cash.
-            message = "Do you have it in cash?";
-            serverConnecter.sendObjectToServer(message);
-
-            //See if the edges are in cash
             message = serverConnecter.readMessageFromServer();
-            if (message.toLowerCase().contains("yes")) {
-                
-                //Get the edges
-                edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
-            } else {
-                
-                //Get the edges
-                int totalEdges = (int) serverConnecter.readObjectFromServer();
-                for (int i = 0; i < totalEdges; i++) {
-                    Edge edge = (Edge) serverConnecter.readObjectFromServer();
-                    drawEdge(edge.getWhite());
-                    edges.add(edge);
-                }
+            if (!message.toLowerCase().contains("what level")) {
+                return;
             }
 
-        }
+            //Say what level the factal needs to be
+            serverConnecter.sendObjectToServer(level);
+            if (communicationType == CommunicationType.Minimal_Network_Load) {
+                //Say at what speed you want tog get the edges
+                message = "Take you're time, and send it when you're finished calculating.";
+                serverConnecter.sendObjectToServer(message);
 
-        //Thank the server
-        message = "Thanks for calculating that for me!";
-        serverConnecter.sendObjectToServer(message);
-        message = serverConnecter.readMessageFromServer();
-        if (!message.toLowerCase().contains("you") || !message.toLowerCase().contains("welcome")) {
-            message = "You could say something as \"You're Welcome!\"";
+                //Get the edges
+                Platform.runLater(() -> {
+                    clearKochPanel();
+                });
+                edges.clear();
+                edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
+            } else {
+                //Say at what speed you want tog get the edges
+                message = "I need each edge as fast as possible!";
+                serverConnecter.sendObjectToServer(message);
+
+                //Clear Local
+                Platform.runLater(() -> {
+                    clearKochPanel();
+                });
+                edges.clear();
+
+                //Ask if the server has the list in cash.
+                message = "Do you have it in cash?";
+                serverConnecter.sendObjectToServer(message);
+
+                //See if the edges are in cash
+                message = serverConnecter.readMessageFromServer();
+                if (message.toLowerCase().contains("yes")) {
+
+                    //Get the edges
+                    edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
+                } else {
+
+                    //Get the edges
+                    int totalEdges = (int) serverConnecter.readObjectFromServer();
+                    for (int i = 0; i < totalEdges; i++) {
+                        Edge edge = (Edge) serverConnecter.readObjectFromServer();
+                        Platform.runLater(() -> {
+                            drawEdge(edge.getWhite());
+                        });
+                        edges.add(edge);
+                    }
+                }
+
+            }
+
+            //Thank the server
+            message = "Thanks for calculating that for me!";
             serverConnecter.sendObjectToServer(message);
-        }
-        drawEdges();
+            message = serverConnecter.readMessageFromServer();
+            if (!message.toLowerCase().contains("you") || !message.toLowerCase().contains("welcome")) {
+                message = "You could say something as \"You're Welcome!\"";
+                serverConnecter.sendObjectToServer(message);
+            }
+            Platform.runLater(() -> {
+                drawEdges();
+            });
+        }).start();
     }
     //</editor-fold>
 
