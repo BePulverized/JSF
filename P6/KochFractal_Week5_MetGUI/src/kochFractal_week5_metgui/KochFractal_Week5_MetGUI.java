@@ -4,6 +4,7 @@ package kochFractal_week5_metgui;
 import callculate.Edge;
 import enums.CommunicationType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -106,7 +107,7 @@ public class KochFractal_Week5_MetGUI extends Application {
         // Label to present current level of Koch fractal
         labelLevel = new Label("Level: " + level);
         grid.add(labelLevel, 0, 6);
-        
+
         // Button to increase level of Koch fractal
         Button buttonIncreaseLevel = new Button();
         buttonIncreaseLevel.setText("Increase Level");
@@ -209,38 +210,58 @@ public class KochFractal_Week5_MetGUI extends Application {
     public void get(int level) {
         String message;
         serverConnecter.connect();
-        
+
         //See it you connect to a fractal server
-        message = serverConnecter.readMessageFromServer();
-        if (!message.toLowerCase().contains("fractal") || !message.toLowerCase().contains("server")) {
-            return;
-        }
-        
-        //Ask for help with a fractal
         message = "Can you please calculate a Fractal for me?";
         serverConnecter.sendObjectToServer(message);
         message = serverConnecter.readMessageFromServer();
         if (!message.toLowerCase().contains("what level")) {
             return;
         }
-        
-        //Say what level the factal needs to be, and at what speed.
+
+        //Say what level the factal needs to be
         serverConnecter.sendObjectToServer(level);
         if (communicationType == CommunicationType.Minimal_Network_Load) {
+            //Say at what speed you want tog get the edges
             message = "Take you're time, and send it when you're finished calculating.";
+            serverConnecter.sendObjectToServer(message);
+
+            //Get the edges
+            clearKochPanel();
+            edges.clear();
+            edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
         } else {
+            //Say at what speed you want tog get the edges
             message = "I need each edge as fast as possible!";
+            serverConnecter.sendObjectToServer(message);
+
+            //Clear Local
+            clearKochPanel();
+            edges.clear();
+            
+            //Ask if the server has the list in cash.
+            message = "Do you have it in cash?";
+            serverConnecter.sendObjectToServer(message);
+
+            //See if the edges are in cash
+            message = serverConnecter.readMessageFromServer();
+            if (message.toLowerCase().contains("yes")) {
+                
+                //Get the edges
+                edges.addAll((Collection<? extends Edge>) serverConnecter.readObjectFromServer());
+            } else {
+                
+                //Get the edges
+                int totalEdges = (int) serverConnecter.readObjectFromServer();
+                for (int i = 0; i < totalEdges; i++) {
+                    Edge edge = (Edge) serverConnecter.readObjectFromServer();
+                    drawEdge(edge.getWhite());
+                    edges.add(edge);
+                }
+            }
+
         }
-        serverConnecter.sendObjectToServer(message);
-        
-        //Get the edges
-        int totalEdges = (int) serverConnecter.readObjectFromServer();
-        for (int i = 0; i < totalEdges; i++) {
-            Edge edge = (Edge) serverConnecter.readObjectFromServer();
-            drawEdge(edge.getWhite());
-            edges.add(edge);
-        }
-        
+
         //Thank the server
         message = "Thanks for calculating that for me!";
         serverConnecter.sendObjectToServer(message);
@@ -277,7 +298,7 @@ public class KochFractal_Week5_MetGUI extends Application {
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Level Decrease">
     private void decreaseLevelButtonActionPerformed(ActionEvent event) {
         if (level > 1) {
@@ -287,7 +308,7 @@ public class KochFractal_Week5_MetGUI extends Application {
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Fit Button">
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();

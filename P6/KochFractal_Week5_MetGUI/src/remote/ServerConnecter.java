@@ -21,7 +21,7 @@ public class ServerConnecter {
     //<editor-fold defaultstate="collapsed" desc="Declarations">
     //<editor-fold defaultstate="collapsed" desc="Static Finnal">
     private static final int PORT = 6752;
-    private static final String SERVERNAME = "85.113.237.162";
+    private static final String SERVERNAME = "localhost";
     //</editor-fold>
     private Socket clientSocket = null;
     private ObjectInputStream objectInputStream = null;
@@ -30,6 +30,7 @@ public class ServerConnecter {
 
     //<editor-fold defaultstate="collapsed" desc="Getters & Setters">
     //</editor-fold>
+    
     //<editor-fold desc="Operations">
     //<editor-fold defaultstate="collapsed" desc="connect()">
     public boolean connect() {
@@ -38,7 +39,7 @@ public class ServerConnecter {
             String message;
             clientSocket = new Socket(SERVERNAME, PORT);
             message = readMessageFromServer();
-            if (message.equals("Welcome to the MP-AirHockey Server.")) {
+            if (message.equals("Welcome to the MP-Fractal Server.")) {
                 returner = true;
             }
         } catch (IOException ex) {
@@ -76,7 +77,7 @@ public class ServerConnecter {
         try {
             objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             returner = objectInputStream.readObject();
-            System.out.println(returner);
+            System.out.println("Server:\t" + returner);
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerConnecter.class.getName()).log(Level.SEVERE, null, ex);
         }
