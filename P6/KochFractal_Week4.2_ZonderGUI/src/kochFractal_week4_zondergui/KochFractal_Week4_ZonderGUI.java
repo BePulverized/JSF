@@ -55,18 +55,19 @@ public class KochFractal_Week4_ZonderGUI implements Observer {
         } else {
             file = args[0];
         }
+        File f = new File(file);
+        if (f.exists()) {
+            f.delete();
+        }
         console.start(file);
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Operations">
+    //<editor-fold defaultstate="collapsed" desc="start(fileDir)">
     private void start(String fileDir) {
-        try {
-            file = controle(fileDir);
-        } catch (IOException ex) {
-            Logger.getLogger(KochFractal_Week4_ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        int choice = kiesLevel();
+        file = new File(fileDir);
+        int choice = chooseLevel();
         edges = new ArrayList<>();
         koch.setLevel(choice);
         koch.generateLeftEdge();
@@ -78,15 +79,16 @@ public class KochFractal_Week4_ZonderGUI implements Observer {
             Logger.getLogger(KochFractal_Week4_ZonderGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="writeEdges()">
     public void writeEdges() throws FileNotFoundException, IOException {
-        File tmpFile = new File("/tmp/Edge");
-        RandomAccessFile memoryMappedFile = new RandomAccessFile(tmpFile, "rw");
+        RandomAccessFile memoryMappedFile = new RandomAccessFile(file, "rw");
         int size = 4 + 4 + (koch.getNrOfEdges() * 3 * 8) + (koch.getNrOfEdges() * 4 * 8);
         FileChannel fileChannel = memoryMappedFile.getChannel();
         MappedByteBuffer out = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, size);
         FileLock fileLock = null;
-        
+
         int firstLock = 0;
         int lastLock = 4 + 4;
         fileLock = fileChannel.lock(firstLock, lastLock, false);
@@ -94,7 +96,7 @@ public class KochFractal_Week4_ZonderGUI implements Observer {
         out.putInt(koch.getLevel());
         out.putInt(koch.getNrOfEdges());
         fileLock.release();
-        
+
         firstLock = lastLock;
         lastLock = (3 * 8) + (4 * 8);
         for (Edge edge : edges) {
@@ -109,54 +111,49 @@ public class KochFractal_Week4_ZonderGUI implements Observer {
             out.putDouble(edge.Y2);
             fileLock.release();
         }
-        tmpFile.renameTo(file);
-        System.out.println("Writing to memory mapped file is completed");
+        System.out.println("Writing to memory mapped file completed");
     }
+    //</editor-fold>
 
-    File controle(String bestandslocatie) throws IOException {
-        File f = new File(bestandslocatie);
-        /*if (!f.exists() && f.isDirectory()) {
-            f = new File(bestandslocatie + "/Edges");
-            f.createNewFile();
-        } else if (!f.exists() && !f.isDirectory()) {
-            f.createNewFile();
-        }*/
-        return f;
-    }
-
-    int kiesLevel() {
+    //<editor-fold defaultstate="collapsed" desc="chooseLevel()">
+    int chooseLevel() {
         System.out.println();
         int maxNr = 10;
         int nr;
-        nr = readInt("maak een keuze uit 1 t/m " + maxNr);
+        nr = readInt("Select Level (1 - " + maxNr + ")");
         while (nr < 1 || nr > maxNr) {
-            nr = readInt("maak een keuze uit 1 t/m " + maxNr);
+            nr = readInt("Select Level (1 - " + maxNr + ")");
         }
         input.nextLine();
         return nr;
     }
+    //</editor-fold>
 
-    int readInt(String helptekst) {
-        boolean invoerOk = false;
-        int invoer = -1;
-        while (!invoerOk) {
+    //<editor-fold defaultstate="collapsed" desc="readInt(string)">
+    int readInt(String string) {
+        int returner = -1;
+        boolean inputCorrect = false;
+        while (!inputCorrect) {
             try {
-                System.out.print(helptekst + " ");
-                invoer = input.nextInt();
-                invoerOk = true;
+                System.out.print(string + " ");
+                returner = input.nextInt();
+                inputCorrect = true;
             } catch (InputMismatchException exc) {
-                System.out.println("Let op, invoer moet een getal zijn!");
+                System.out.println("Not a correct input.");
                 input.nextLine();
             }
 
         }
-        return invoer;
+        return returner;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="update(o, arg)">
     @Override
     public void update(Observable o, Object arg) {
         Edge e = (Edge) arg;
         edges.add(e);
     }
+    //</editor-fold>
     //</editor-fold>
 }
