@@ -1,4 +1,3 @@
-//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package kochfractal_week3_metgui;
 
 import callculate.Edge;
@@ -26,18 +25,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-//</editor-fold>
 
 /**
- * In this class you can find all properties and operations for KochFractal_Week3_MetGUI.
+ * In this class you can find all properties and operations for
+ * KochFractal_Week3_MetGUI.
  *
- * @organization: Moridrin
- * @author phinux
- * @date 15-mei-2014
+ * @author Roel de Wit
  */
 public class KochFractal_Week3_MetGUI extends Application {
 
-    //<editor-fold defaultstate="collapsed" desc="Declarations">
     // Zoom and drag
     private double zoomTranslateX = 0.0;
     private double zoomTranslateY = 0.0;
@@ -48,7 +44,7 @@ public class KochFractal_Week3_MetGUI extends Application {
     private double lastDragY = 0.0;
 
     // Current level of Koch fractal
-    private File file = new File("/tmp/Edge");
+    private File file = new File("C:/Users/Roel/Desktop/Edges");
     private int level = 1;
 
     // Labels for level, nr edges, calculation time, and drawing time
@@ -64,10 +60,7 @@ public class KochFractal_Week3_MetGUI extends Application {
     private Canvas kochPanel;
     private final int kpWidth = 500;
     private final int kpHeight = 500;
-    //</editor-fold>
 
-    //<editor-fold desc="Operations">
-    //<editor-fold defaultstate="collapsed" desc="Start">
     @Override
     public void start(Stage primaryStage) {
 
@@ -120,21 +113,21 @@ public class KochFractal_Week3_MetGUI extends Application {
 
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                                  new EventHandler<MouseEvent>() {
-                                      @Override
-                                      public void handle(MouseEvent event) {
-                                          kochPanelMouseClicked(event);
-                                      }
-                                  });
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        kochPanelMouseClicked(event);
+                    }
+                });
 
         // Add mouse pressed event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-                                  new EventHandler<MouseEvent>() {
-                                      @Override
-                                      public void handle(MouseEvent event) {
-                                          kochPanelMousePressed(event);
-                                      }
-                                  });
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        kochPanelMousePressed(event);
+                    }
+                });
 
         // Add mouse dragged event to Koch panel
         kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -158,9 +151,7 @@ public class KochFractal_Week3_MetGUI extends Application {
         primaryStage.show();
         fitFractalButtonActionPerformed(null);
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Draw methodes">
     public void clearKochPanel() {
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
         gc.clearRect(0.0, 0.0, kpWidth, kpHeight);
@@ -171,7 +162,7 @@ public class KochFractal_Week3_MetGUI extends Application {
     public void drawEdges() throws ClassNotFoundException, FileNotFoundException, IOException {
         clearKochPanel();
 
-        RandomAccessFile memoryMappedFile = new RandomAccessFile("/tmp/Edge", "rw");
+        RandomAccessFile memoryMappedFile = new RandomAccessFile("C:/Users/Roel/Desktop/Edges", "rw");
         MappedByteBuffer in = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, memoryMappedFile.length());
         level = in.getInt();
         int nrOfEdges = in.getInt();
@@ -209,9 +200,7 @@ public class KochFractal_Week3_MetGUI extends Application {
         // Draw line
         gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Setters">
     public void setTextNrEdges(String text) {
         labelNrEdgesText.setText(text);
     }
@@ -223,10 +212,7 @@ public class KochFractal_Week3_MetGUI extends Application {
     public void setTextDraw(String text) {
         labelDrawText.setText(text);
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Events">
-    //<editor-fold defaultstate="collapsed" desc="Fit Button">
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();
         try {
@@ -237,12 +223,10 @@ public class KochFractal_Week3_MetGUI extends Application {
             Logger.getLogger(KochFractal_Week3_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Panel Clicked">
     private void kochPanelMouseClicked(MouseEvent event) {
         if (Math.abs(event.getX() - startPressedX) < 1.0
-            && Math.abs(event.getY() - startPressedY) < 1.0) {
+                && Math.abs(event.getY() - startPressedY) < 1.0) {
             double originalPointClickedX = (event.getX() - zoomTranslateX) / zoom;
             double originalPointClickedY = (event.getY() - zoomTranslateY) / zoom;
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -261,9 +245,7 @@ public class KochFractal_Week3_MetGUI extends Application {
             }
         }
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Panel Dragged">
     private void kochPanelMouseDragged(MouseEvent event) {
         zoomTranslateX = zoomTranslateX + event.getX() - lastDragX;
         zoomTranslateY = zoomTranslateY + event.getY() - lastDragY;
@@ -277,19 +259,14 @@ public class KochFractal_Week3_MetGUI extends Application {
             Logger.getLogger(KochFractal_Week3_MetGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Mouse Pressed">
     private void kochPanelMousePressed(MouseEvent event) {
         startPressedX = event.getX();
         startPressedY = event.getY();
         lastDragX = event.getX();
         lastDragY = event.getY();
     }
-    //</editor-fold>
-    //</editor-fold>   
 
-    //<editor-fold defaultstate="collapsed" desc="Zoom">
     private void resetZoom() {
         int kpSize = Math.min(kpWidth, kpHeight);
         zoom = kpSize;
@@ -305,19 +282,16 @@ public class KochFractal_Week3_MetGUI extends Application {
                 e.Y2 * zoom + zoomTranslateY,
                 e.getColor());
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="main(args)">
     /**
-     * The main() method is ignored in correctly deployed JavaFX application. main() serves only as fallback in case the
-     * application can not be launched through deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
-     * main().
+     * The main() method is ignored in correctly deployed JavaFX application.
+     * main() serves only as fallback in case the application can not be
+     * launched through deployment artifacts, e.g., in IDEs with limited FX
+     * support. NetBeans ignores main().
      *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
-    //</editor-fold>
-    //</editor-fold>
 }

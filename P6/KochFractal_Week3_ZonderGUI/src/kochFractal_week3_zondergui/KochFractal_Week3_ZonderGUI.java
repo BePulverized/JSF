@@ -1,4 +1,3 @@
-//<editor-fold defaultstate="collapsed" desc="Jibberish">
 package kochFractal_week3_zondergui;
 
 import callculate.Edge;
@@ -17,26 +16,20 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//</editor-fold>
 
 /**
- * In this class you can find all properties and operations for KochFractal_Week3_ZonderGUI.
- * //CHECK
+ * In this class you can find all properties and operations for
+ * KochFractal_Week3_ZonderGUI. //CHECK
  *
- * @organization: Moridrin
- * @author J.B.A.J. Berkvens
- * @date 2014/05/26
+ * @author Roel de Wit
  */
 public class KochFractal_Week3_ZonderGUI implements Observer {
 
-    //<editor-fold defaultstate="collapsed" desc="Declarations">
     private final Scanner input;
     private final KochFractal koch;
     private File file;
     private List<Edge> edges;
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Constructor/Main">
     public KochFractal_Week3_ZonderGUI() {
         input = new Scanner(System.in);
         this.koch = new KochFractal();
@@ -51,15 +44,13 @@ public class KochFractal_Week3_ZonderGUI implements Observer {
         KochFractal_Week3_ZonderGUI console = new KochFractal_Week3_ZonderGUI();
         String file;
         if (args.length < 1) {
-            file = "/tmp/Edge";
+            file = "C:/Users/Roel/Desktop/Edges";
         } else {
             file = args[0];
         }
         console.start(file);
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Operations">
     private void start(String fileDir) {
         try {
             file = controle(fileDir);
@@ -144,5 +135,4 @@ public class KochFractal_Week3_ZonderGUI implements Observer {
         Edge e = (Edge) arg;
         edges.add(e);
     }
-    //</editor-fold>
 }
